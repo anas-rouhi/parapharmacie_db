@@ -15,12 +15,7 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        \App\Models\User::create([
-            'name' => 'Admin PFE',
-            'email' => 'admin@pfe.com',
-            'password' => bcrypt('admin123'), // Password bach ghadi t-dkhel
-            'role' => 'admin',
-        ]);
+       
         $this->call([
             ProductSeeder::class,
         ]);
