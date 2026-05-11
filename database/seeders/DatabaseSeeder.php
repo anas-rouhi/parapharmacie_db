@@ -21,6 +21,9 @@ class DatabaseSeeder extends Seeder
             'password' => bcrypt('admin123'), // Password bach ghadi t-dkhel
             'role' => 'admin',
         ]);
+        $this->call([
+            ProductSeeder::class,
+        ]);
     }
 }
 
