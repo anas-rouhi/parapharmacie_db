@@ -44,14 +44,18 @@ class ChatbotController extends Controller
                 ->withQueryParameters([
                     'key' => $apiKey
                 ])
-                ->post("https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent", [
+                ->post("https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent", [
                     'contents' => [
                         [
                             'parts' => [
                                 ['text' => $systemPrompt . "\n\nMessage du client : " . $userMessage]
                             ]
                         ]
-                    ]
+                    ],
+                    // 🔒 كنجبرو الـ IA يرجع JSON نقي بلا Markdown باش الـ parsing يكون مضمون
+                    'generationConfig' => [
+                        'responseMimeType' => 'application/json',
+                    ],
                 ]);
 
             if ($response->successful()) {

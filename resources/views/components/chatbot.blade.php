@@ -152,7 +152,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         produits.forEach(p => {
             const pLink = document.createElement('a');
-            pLink.href = `/products/${p.id}`; 
+            pLink.href = `/product/${p.id}`;
             pLink.className = 'flex items-center gap-3 bg-white p-2 rounded-xl border border-gray-100 hover:border-green-300 transition shadow-sm w-full';
             
             const imgUrl = p.image ? `/images/products/${p.image}` : '/images/default.png';
