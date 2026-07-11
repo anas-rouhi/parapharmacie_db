@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
+    <link rel="icon" type="image/svg+xml" href="{{ asset('favicon.svg') }}">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ParaSante | {{ $produit->nom }}</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     <style> body { font-family: 'Inter', sans-serif; } </style>
 </head>
@@ -27,7 +29,16 @@
                         @else
                             <span class="text-gray-400 italic">Image non disponible</span>
                         @endif
-                        <span class="absolute top-4 left-4 bg-green-500 text-white text-xs px-3 py-1 rounded-md font-bold uppercase tracking-wider shadow">Nouveau</span>
+                        @if($produit->created_at && $produit->created_at->gt(now()->subDays(14)))
+                            <span class="absolute top-4 left-4 bg-emerald-500 text-white text-xs px-3 py-1 rounded-md font-bold uppercase tracking-wider shadow">Nouveau</span>
+                        @endif
+                        @if($produit->stock <= 0)
+                            <span class="absolute top-4 right-4 bg-red-600 text-white text-xs px-3 py-1 rounded-md font-bold uppercase tracking-wider shadow">Rupture</span>
+                        @elseif($produit->stock <= 3)
+                            <span class="absolute top-4 right-4 bg-orange-500 text-white text-xs px-3 py-1 rounded-md font-bold uppercase tracking-wider shadow animate-pulse">Stock Limité ({{ $produit->stock }})</span>
+                        @else
+                            <span class="absolute top-4 right-4 bg-emerald-500 text-white text-xs px-3 py-1 rounded-md font-bold uppercase tracking-wider shadow">En Stock</span>
+                        @endif
                     </div>
                 </div>
 
@@ -69,11 +80,20 @@
                                         <input type="number" id="quantity-input" name="quantite" value="1" class="w-12 text-center font-bold text-gray-800 bg-transparent pointer-events-none focus:outline-none">
                                         <button type="button" onclick="incrementQty({{ $produit->stock }})" class="w-12 text-gray-600 hover:bg-gray-100 h-full font-black text-xl flex items-center justify-center">+</button>
                                     </div>
-                                    <button type="submit" class="w-full h-14 bg-green-600 hover:bg-green-700 text-white rounded-xl font-bold flex items-center justify-center gap-2 shadow-lg transition">
+                                    <button type="submit" class="w-full h-14 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-bold flex items-center justify-center gap-2 shadow-lg shadow-emerald-600/20 transition active:scale-[0.98]">
+                                        <i class="fa-solid fa-cart-plus"></i>
                                         Ajouter au panier (<span id="total-price">{{ $produit->prix }} DH</span>)
                                     </button>
                                 </div>
                             </form>
+                        @else
+                            <div class="flex items-center gap-3 text-red-600">
+                                <span class="h-11 w-11 rounded-xl bg-red-50 flex items-center justify-center text-lg"><i class="fa-solid fa-triangle-exclamation"></i></span>
+                                <div>
+                                    <p class="font-black text-sm uppercase tracking-wide">Rupture de stock</p>
+                                    <p class="text-xs text-gray-500 font-medium">Ce produit n'est pas disponible pour le moment.</p>
+                                </div>
+                            </div>
                         @endif
                     </div>
                 </div>
@@ -138,7 +158,7 @@
                             <label class="block text-xs font-bold text-gray-600 uppercase mb-1">Votre Commentaire :</label>
                             <textarea name="commentaire" rows="3" required class="w-full bg-white border border-gray-200 px-4 py-2.5 rounded-xl text-xs focus:outline-none focus:border-green-500 font-medium"></textarea>
                         </div>
-                        <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-xl font-bold text-xs shadow transition">
+                        <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white py-3 rounded-xl font-bold text-xs shadow shadow-emerald-600/20 transition active:scale-[0.98]">
                             Soumettre l'avis
                         </button>
                     </div>
@@ -149,20 +169,12 @@
         <!-- المنتجات المقترحة -->
         @if($produitsSimilaires->count() > 0)
             <div class="mt-16">
-                <h2 class="text-xl font-bold text-gray-800 mb-6 flex items-center gap-2">
-                    <span class="w-2 h-6 bg-blue-600 rounded-full block"></span> Vous pourriez aussi aimer :
+                <h2 class="text-2xl sm:text-3xl font-extrabold text-gray-900 mb-6 flex items-center gap-2 tracking-tight">
+                    <span class="w-2 h-7 bg-emerald-600 rounded-full block"></span> Vous pourriez aussi aimer
                 </h2>
-                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
                     @foreach($produitsSimilaires as $simil)
-                        <div class="bg-white rounded-2xl border border-gray-100 overflow-hidden shadow-sm hover:shadow-md p-4 flex flex-col justify-between">
-                            <a href="{{ route('products.show', $simil->id) }}">
-                                <div class="h-40 bg-gray-50 rounded-xl overflow-hidden mb-3">
-                                    @if($simil->image) <img src="{{ asset('images/products/' . $simil->image) }}" class="h-full w-full object-cover"> @endif
-                                </div>
-                                <h4 class="font-bold text-gray-800 truncate text-sm">{{ $simil->nom }}</h4>
-                                <span class="text-sm font-black text-gray-900 block mt-1">{{ $simil->prix }} DH</span>
-                            </a>
-                        </div>
+                        @include('products._card', ['item' => $simil])
                     @endforeach
                 </div>
             </div>
@@ -212,6 +224,7 @@
         });
     @endif
 </script>
+    @include('products._quickview')
     <x-site-footer />
 </body>
 </html>

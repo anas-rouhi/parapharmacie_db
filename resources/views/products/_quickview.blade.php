@@ -51,7 +51,7 @@
         } else if (parseInt(stock) <= 3) {
             badge.innerText = "Stock Limité (" + stock + ")"; badge.classList.add('bg-orange-500', 'text-white', 'animate-pulse');
         } else {
-            badge.innerText = "En Stock"; badge.classList.add('bg-blue-500', 'text-white');
+            badge.innerText = "En Stock"; badge.classList.add('bg-emerald-500', 'text-white');
         }
 
         const modal = document.getElementById('quickViewModal');

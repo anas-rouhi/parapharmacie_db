@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="fr" class="scroll-smooth">
 <head>
+    <link rel="icon" type="image/svg+xml" href="{{ asset('favicon.svg') }}">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ParaSante | Accueil</title>
@@ -84,67 +85,89 @@
         </div>
     @endif
 
-    <!-- 🌌 الـ Header الخيالي (العناصر العائمة ثلاثية الأبعاد + الـ Typewriter Effect التفاعلي) -->
-    <header class="relative bg-gradient-to-br from-green-50/50 via-white to-blue-50/40 overflow-hidden py-24 lg:py-32">
-        <!-- ⚡ فقاعات خيالية مضيئة ومتحركة في الخلفية (Abstract Magical Orbs) -->
-        <div class="absolute top-10 left-10 w-80 h-80 bg-green-300/20 rounded-full blur-3xl animate-float-1 pointer-events-none"></div>
-        <div class="absolute bottom-10 right-10 w-[450px] h-[450px] bg-blue-300/15 rounded-full blur-3xl animate-float-2 pointer-events-none"></div>
-        
-        <!-- أيقونات طبيعية طائرة خفيفة في الخلفية تمنح شعوراً بالعمق البصري -->
-        <div class="absolute top-1/4 right-1/3 text-green-500/10 text-8xl animate-float-1 pointer-events-none select-none hidden lg:block">🍃</div>
-        <div class="absolute bottom-1/3 left-1/4 text-blue-500/10 text-7xl animate-float-2 pointer-events-none select-none hidden lg:block">✨</div>
+    <!-- 🌿 HERO (unifié) -->
+    @php $heroCount = \App\Models\Produit::where('stock', '>', 0)->count(); @endphp
+    <header class="relative bg-gradient-to-br from-emerald-50/70 via-white to-teal-50/40 overflow-hidden pt-20 pb-20 lg:pt-24 lg:pb-28">
+        <!-- Orbes lumineux animés -->
+        <div class="absolute -top-16 left-1/4 w-96 h-96 bg-emerald-300/25 rounded-full blur-3xl animate-float-1 pointer-events-none"></div>
+        <div class="absolute -bottom-24 right-0 w-[30rem] h-[30rem] bg-teal-300/20 rounded-full blur-3xl animate-float-2 pointer-events-none"></div>
+        <div class="absolute top-1/4 right-1/3 text-emerald-500/10 text-8xl animate-float-1 pointer-events-none select-none hidden lg:block">🍃</div>
+        <div class="absolute bottom-1/3 left-1/4 text-teal-500/10 text-7xl animate-float-2 pointer-events-none select-none hidden lg:block">✨</div>
 
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col lg:flex-row items-center gap-16 relative z-10">
-            
-            <!-- الجزء الأيسر: الكتابة الآلية المذهلة -->
-            <div class="lg:w-1/2 text-center lg:text-left space-y-6">
-                <span class="inline-flex items-center gap-1.5 py-2 px-4 rounded-full text-xs font-black bg-gradient-to-r from-green-50 to-teal-50 text-green-700 border border-green-200/50 mb-2 shadow-sm uppercase tracking-wider">
-                    <i class="fa-solid fa-sparkles text-[11px] text-amber-500 animate-pulse"></i> 100% Produits Authentiques & Bio
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center relative z-10">
+
+            <!-- Colonne texte -->
+            <div class="text-center lg:text-left space-y-6 animate-fade-up">
+                <span class="inline-flex items-center gap-2 py-2 px-4 rounded-full text-[11px] font-black bg-white text-emerald-700 border border-emerald-200/60 shadow-sm uppercase tracking-widest">
+                    <span class="relative flex h-2 w-2">
+                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                        <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                    </span>
+                    100% Produits Authentiques & Bio
                 </span>
-                
-                <!-- 🎯 هنا قمت بربط الـ Typewriter ومزج العنوان بطريقة مذهلة لتغيير الكلمات تلقائياً -->
-                <h1 class="text-4xl font-black text-slate-900 sm:text-5xl md:text-6xl tracking-tight leading-[1.15]">
-                    Prenez soin de <br>
-                    <span class="text-transparent bg-clip-text bg-gradient-to-r from-green-600 via-teal-500 to-blue-600" id="typewriter-text"></span>
-                    <span class="text-green-500 animate-pulse">|</span>
+
+                <h1 class="text-4xl sm:text-5xl md:text-6xl font-black text-slate-900 tracking-tight leading-[1.1]">
+                    Des produits<br>
+                    <span class="text-transparent bg-clip-text bg-gradient-to-r from-emerald-600 via-teal-500 to-emerald-600" id="typewriter-text"></span><span class="text-emerald-500 animate-pulse font-light">|</span>
                 </h1>
-                
-                <p class="text-base md:text-lg text-slate-500 max-w-xl leading-relaxed font-medium">
-                    Découvrez notre sélection premium de parapharmacie. Des soins d'experts, des compléments certifiés et des offres flash quotidiennes sélectionnés pour votre santé.
+
+                <p class="text-base md:text-lg text-slate-500 max-w-xl mx-auto lg:mx-0 leading-relaxed font-medium">
+                    Découvrez notre sélection premium de parapharmacie : soins d'experts, compléments certifiés et offres flash quotidiennes — livrés rapidement partout au Maroc.
                 </p>
-                
-                <div class="flex flex-wrap justify-center lg:justify-start gap-4 pt-4">
-                    <a href="#produits" class="bg-gradient-to-r from-green-600 to-teal-600 text-white px-8 py-4 rounded-2xl font-bold shadow-lg shadow-green-500/20 hover:shadow-green-600/40 hover:-translate-y-1 transition duration-300 flex items-center gap-2 group">
-                        Voir les produits <i class="fa-solid fa-arrow-right text-xs transform group-hover:translate-x-1 transition"></i>
+
+                <div class="flex flex-col sm:flex-row justify-center lg:justify-start gap-3 pt-2">
+                    <a href="{{ route('boutique') }}" class="group inline-flex items-center justify-center gap-2 bg-gradient-to-r from-emerald-600 to-teal-600 text-white px-8 py-4 rounded-2xl font-bold shadow-lg shadow-emerald-500/25 hover:shadow-emerald-600/40 hover:-translate-y-0.5 transition duration-300">
+                        <i class="fa-solid fa-store text-sm"></i> Explorer la boutique
+                        <i class="fa-solid fa-arrow-right text-xs group-hover:translate-x-1 transition"></i>
                     </a>
-                    <button onclick="openFrontModal('aproposModal')" class="bg-white/80 backdrop-blur border border-slate-200 text-slate-700 px-8 py-4 rounded-2xl font-bold hover:bg-slate-50/80 hover:border-slate-300 transition shadow-xs">
-                        En savoir plus
-                    </button>
+                    <a href="#produits" class="inline-flex items-center justify-center gap-2 bg-white border border-slate-200 text-slate-700 px-8 py-4 rounded-2xl font-bold hover:border-emerald-300 hover:text-emerald-700 hover:bg-emerald-50/50 transition shadow-sm">
+                        Nos produits
+                    </a>
+                </div>
+
+                <!-- Stats de confiance -->
+                <div class="grid grid-cols-3 gap-3 pt-6 max-w-lg mx-auto lg:mx-0">
+                    <div class="text-center lg:text-left">
+                        <p class="text-2xl md:text-3xl font-black text-slate-900">{{ $heroCount }}+</p>
+                        <p class="text-[11px] font-bold text-slate-400 uppercase tracking-wider mt-0.5">Produits</p>
+                    </div>
+                    <div class="text-center lg:text-left border-x border-slate-100 lg:border-x-0 lg:border-l">
+                        <p class="text-2xl md:text-3xl font-black text-slate-900">24/48h</p>
+                        <p class="text-[11px] font-bold text-slate-400 uppercase tracking-wider mt-0.5 lg:pl-0">Livraison</p>
+                    </div>
+                    <div class="text-center lg:text-left">
+                        <p class="text-2xl md:text-3xl font-black text-slate-900">4.9<span class="text-amber-400 text-lg">★</span></p>
+                        <p class="text-[11px] font-bold text-slate-400 uppercase tracking-wider mt-0.5">Satisfaction</p>
+                    </div>
                 </div>
             </div>
-            
-            <!-- الجزء الأيمن: تصميم ثلاثي الأبعاد زجاجي خيالي (Futuristic Glass Card) -->
-            <div class="lg:w-1/2 w-full px-4 flex justify-center lg:justify-end">
-                <div class="relative bg-white/40 backdrop-blur-2xl rounded-[2.5rem] p-12 border-4 border-white shadow-[0_30px_60px_-15px_rgba(15,23,42,0.08)] flex flex-col items-center justify-center text-center group overflow-hidden h-80 lg:h-[420px] w-full max-w-md transition-all duration-500 hover:scale-[1.02] hover:shadow-[0_40px_80px_-15px_rgba(34,197,94,0.15)]">
-                    
-                    <!-- إضاءة نيون خلفية تتفاعل وتكبر عند مرور الماوس فوق الكارت -->
-                    <div class="absolute -right-20 -top-20 w-60 h-60 bg-gradient-to-br from-green-400/20 to-blue-400/20 rounded-full blur-3xl group-hover:scale-150 transition duration-700"></div>
-                    <div class="absolute -left-20 -bottom-20 w-60 h-60 bg-gradient-to-br from-teal-400/10 to-emerald-400/20 rounded-full blur-3xl group-hover:scale-150 transition duration-700"></div>
-                    
-                    <!-- الأيقونة النابضة بالتأثير ثلاثي الأبعاد -->
-                    <div class="h-24 w-24 bg-gradient-to-tr from-green-500 via-teal-500 to-blue-600 rounded-3xl flex items-center justify-center text-white shadow-xl shadow-green-500/20 mb-8 transform group-hover:rotate-6 group-hover:scale-110 transition duration-300 relative">
-                        <i class="fa-solid fa-heart-pulse text-5xl animate-pulse"></i>
-                        <span class="absolute top-0 right-0 flex h-3 w-3">
-                          <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-sky-400 opacity-75"></span>
-                          <span class="relative inline-flex rounded-full h-3 w-3 bg-sky-500"></span>
-                        </span>
+
+            <!-- Colonne visuel -->
+            <div class="relative flex justify-center lg:justify-end animate-fade-up" style="animation-delay:.15s">
+                <div class="relative w-full max-w-md lg:max-w-xl">
+                    <div class="rounded-[2.5rem] overflow-hidden shadow-2xl border-[6px] border-white bg-white">
+                        <img src="https://images.unsplash.com/photo-1608571423902-eed4a5ad8108?auto=format&fit=crop&w=800&q=80"
+                             alt="Parapharmacie ParaSante"
+                             class="w-full h-[380px] lg:h-[460px] object-cover">
                     </div>
-                    
-                    <span class="font-black text-3xl text-slate-800 tracking-tight transition group-hover:text-green-600 duration-300">E-ParaSante</span>
-                    <div class="w-16 h-1.5 bg-gradient-to-r from-green-500 via-teal-500 to-blue-500 rounded-full my-4"></div>
-                    <p class="text-sm text-slate-500 font-semibold max-w-sm leading-relaxed">
-                        Votre parapharmacie de confiance à Marrakech. Commandez en toute sécurité et profitez d'une livraison rapide partout au Maroc.
-                    </p>
+
+                    <!-- Badge flottant : livraison -->
+                    <div class="absolute -bottom-5 left-4 sm:left-8 bg-white/90 backdrop-blur-xl border border-white/60 p-3.5 rounded-2xl shadow-xl flex items-center gap-3 animate-float-1">
+                        <span class="h-11 w-11 rounded-xl bg-emerald-500 text-white flex items-center justify-center text-lg shadow-md shadow-emerald-500/30"><i class="fa-solid fa-truck-fast"></i></span>
+                        <div>
+                            <h4 class="text-xs font-black text-slate-900 uppercase tracking-wide">Livraison rapide</h4>
+                            <p class="text-[11px] text-emerald-700 font-bold mt-0.5">Partout au Maroc</p>
+                        </div>
+                    </div>
+
+                    <!-- Badge flottant : offres flash -->
+                    <div class="absolute -top-5 right-4 sm:right-6 bg-white/90 backdrop-blur-xl border border-white/60 px-4 py-3 rounded-2xl shadow-xl flex items-center gap-2.5 animate-float-2">
+                        <span class="text-xl">⚡</span>
+                        <div>
+                            <h4 class="text-xs font-black text-slate-900 uppercase tracking-wide">Offres Flash</h4>
+                            <p class="text-[11px] text-amber-600 font-bold mt-0.5">Chaque jour</p>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -192,103 +215,11 @@
             </div>
         </div>
     </section>
-   <section class="relative min-h-[85vh] flex items-center bg-gradient-to-br from-green-50/60 via-white to-blue-50/40 overflow-hidden pt-20">
-    <div class="absolute top-12 left-10 w-72 h-72 bg-green-200/30 rounded-full blur-3xl animate-float-1 pointer-events-none"></div>
-    <div class="absolute bottom-10 right-10 w-96 h-96 bg-blue-200/20 rounded-full blur-3xl animate-float-2 pointer-events-none"></div>
-    
-    <div class="absolute top-1/4 right-1/4 text-green-500/10 text-9xl animate-float-1 pointer-events-none select-none hidden lg:block">🍃</div>
-    <div class="absolute bottom-1/4 left-1/3 text-teal-500/10 text-7xl animate-float-2 pointer-events-none select-none hidden lg:block">✨</div>
-
-    <div class="container mx-auto px-6 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center relative z-10">
-        <div class="space-y-6 text-center lg:text-left">
-            <span class="inline-flex items-center gap-1.5 bg-green-100/80 backdrop-blur-md text-green-700 text-xs font-black px-4 py-2 rounded-full uppercase tracking-wider shadow-sm border border-green-200/40">
-                🌱 100% Produits Authentiques & Bio
-            </span>
-            
-            <h1 class="text-4xl md:text-6xl font-black text-gray-900 tracking-tight leading-[1.15]">
-                Votre Santé & Éclat
-            </h1>
-            
-            <p class="text-base text-gray-500 font-medium max-w-xl mx-auto lg:mx-0 leading-relaxed min-h-[60px]">
-                <span id="typewriter-paragraph"></span><span class="text-green-600 font-bold animate-pulse">|</span>
-            </p>
-            
-            <div class="flex flex-col sm:flex-row justify-center lg:justify-start gap-4 pt-4">
-                <a href="{{ route('boutique') }}" class="bg-gradient-to-r from-green-600 to-teal-600 hover:from-green-700 hover:to-teal-700 text-white font-bold px-8 py-4 rounded-2xl shadow-lg shadow-green-200 transition transform hover:-translate-y-0.5 duration-200 text-center">
-                    🛒 Explorer la Boutique
-                </a>
-               
-            </div>
-        </div>
-
-        <div class="relative flex justify-center lg:justify-end">
-            <div class="relative w-full max-w-md md:max-w-xl rounded-[2.5rem] overflow-hidden shadow-2xl border-4 border-white bg-white/40 backdrop-blur-md p-4 transition-transform duration-500 hover:scale-[1.01]">
-                <img src="https://images.unsplash.com/photo-1608571423902-eed4a5ad8108?auto=format&fit=crop&w=800&q=80" alt="Parapharmacie" class="rounded-[2rem] w-full h-[450px] object-cover">
-                
-                <div class="absolute bottom-8 left-8 bg-white/80 backdrop-blur-xl border border-white/40 p-4 rounded-2xl shadow-xl flex items-center gap-3 animate-float-1">
-                    <span class="text-3xl bg-green-500 text-white p-2.5 rounded-xl">⚡</span>
-                    <div>
-                        <h4 class="text-xs font-black text-gray-900 uppercase tracking-wide">Packs Promotionnels</h4>
-                        <p class="text-[11px] text-green-700 font-bold mt-0.5">Offres Flash</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</section>
-
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const phrases = [
-            "Découvrez notre sélection premium de parapharmacie. Des soins d'experts, des compléments certifiés et des offres flash quotidiennes pour prendre soin de vous.",
-            "Des produits 100% authentiques sélectionnés par des professionnels pour votre bien-être au quotidien.",
-            "Profitez de nos offres flash exclusives avec livraison rapide partout au Maroc."
-        ];
-        
-        let phraseIndex = 0;
-        let charIndex = 0;
-        let isDeleting = false;
-        const targetElement = document.getElementById("typewriter-paragraph");
-        let speed = 40; // سرعة الكتابة حيت الفقرة طويلة باش تجي خفيفة ونقية
-
-        function typeParagraph() {
-            if (!targetElement) return;
-            
-            const currentPhrase = phrases[phraseIndex];
-            
-            if (isDeleting) {
-                targetElement.textContent = currentPhrase.substring(0, charIndex - 1);
-                charIndex--;
-                speed = 15; // سرعة أكبر ف المسح
-            } else {
-                targetElement.textContent = currentPhrase.substring(0, charIndex + 1);
-                charIndex++;
-                speed = 30; // سرعة معتدلة ف الكتابة
-            }
-
-            // إذا كملت الجملة كاملة
-            if (!isDeleting && charIndex === currentPhrase.length) {
-                speed = 3000; // كتبقى الجملة باينة 3 ثواني باش يقراها الكليان واللجنة
-                isDeleting = true;
-            } 
-            // إذا تمسحات الجملة كاملة وداز للثانية
-            else if (isDeleting && charIndex === 0) {
-                isDeleting = false;
-                phraseIndex = (phraseIndex + 1) % phrases.length;
-                speed = 500;
-            }
-
-            setTimeout(typeParagraph, speed);
-        }
-
-        typeParagraph();
-    });
-</script>
 
 <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-16 reveal">
     <div class="text-center md:text-left mb-8">
-        <h2 class="text-xl font-extrabold text-gray-900 uppercase tracking-wide">
-            <span class="text-green-600">✦</span> Vos Besoins Spécifiques
+        <h2 class="text-2xl sm:text-3xl font-extrabold text-gray-900 tracking-tight flex items-center gap-2">
+            <span class="text-emerald-600">✦</span> Vos Besoins Spécifiques
         </h2>
         <p class="text-sm text-gray-400 mt-1">Trouvez rapidement la solution adaptée à votre profil</p>
     </div>
@@ -357,27 +288,30 @@
                 <span class="inline-flex items-center gap-1.5 py-1 px-3 rounded-full text-[10px] font-black bg-red-500 text-white uppercase tracking-widest mb-4 animate-pulse">
                     <i class="fa-solid fa-bolt"></i> Offre Flash Limitée
                 </span>
-                <h2 class="text-2xl md:text-4xl font-extrabold text-white tracking-tight leading-none">
-                    Profitez de <span class="text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-orange-400">Offre Spéciale : {{ $flashProduct->nom }}</span>
+                <h2 class="text-2xl md:text-4xl font-extrabold text-white tracking-tight leading-tight">
+                    Profitez de notre <span class="text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-orange-400">Offre Spéciale : {{ $flashProduct->nom }}</span>
                 </h2>
                 
-                <div class="mt-4 bg-white/5 rounded-2xl p-4 border border-white/5 text-left">
-                    <p class="text-xs font-bold text-amber-400 uppercase tracking-wider mb-2"><i class="fa-solid fa-box-open"></i> Ce pack contient :</p>
-                    <ul class="space-y-1.5 text-xs text-slate-200 font-medium pl-1">
-                        @php
-                            $pack_items = json_decode($flashProduct->pack_products ?? '[]', true) ?? [];
-                        @endphp
-                        @if(count($pack_items) > 0)
+                @php
+                    $pack_items = json_decode($flashProduct->pack_products ?? '[]', true) ?? [];
+                @endphp
+                @if(count($pack_items) > 0)
+                    <div class="mt-4 bg-white/5 rounded-2xl p-4 border border-white/5 text-left">
+                        <p class="text-xs font-bold text-amber-400 uppercase tracking-wider mb-2"><i class="fa-solid fa-box-open"></i> Ce pack contient :</p>
+                        <ul class="space-y-1.5 text-xs text-slate-200 font-medium pl-1">
                             @foreach($pack_items as $item)
                                 <li class="flex items-center gap-2">
-                                    <i class="fa-solid fa-circle-check text-emerald-400 text-[10px]"></i> {{ $item }}
+                                    <i class="fa-solid fa-circle-check text-emerald-400 text-[10px]"></i>
+                                    @if(is_array($item))
+                                        {{ $item['nom'] ?? '' }}@if(!empty($item['quantite'])) <span class="text-slate-400">(x{{ $item['quantite'] }})</span>@endif
+                                    @else
+                                        {{ $item }}
+                                    @endif
                                 </li>
                             @endforeach
-                        @else
-                            <li class="text-slate-400 italic">Consultez la description pour voir les détails.</li>
-                        @endif
-                    </ul>
-                </div>
+                        </ul>
+                    </div>
+                @endif
 
                 <div class="mt-6 flex justify-center lg:justify-start gap-3 text-white">
                     <div class="bg-white/10 backdrop-blur border border-white/10 rounded-2xl p-3 min-w-[70px] text-center">
@@ -395,12 +329,20 @@
                 </div>
             </div>
 
+            @php $hasFlashDiscount = $flashProduct->prix > 0 && $flashProduct->prix_flash < $flashProduct->prix; @endphp
             <div class="bg-white/5 backdrop-blur-xl border border-white/10 p-6 rounded-2xl text-center min-w-[280px] shadow-xl">
                 <p class="text-xs font-bold text-slate-400 uppercase tracking-widest">Prix Spécial Pack</p>
                 <div class="flex items-center justify-center gap-3 my-2">
                     <span class="text-3xl font-black text-white">{{ $flashProduct->prix_flash }} DH</span>
-                    <span class="text-sm font-bold text-slate-400 line-through">{{ $flashProduct->prix }} DH</span>
+                    @if($hasFlashDiscount)
+                        <span class="text-sm font-bold text-slate-400 line-through">{{ $flashProduct->prix }} DH</span>
+                    @endif
                 </div>
+                @if($hasFlashDiscount)
+                    <span class="inline-block bg-red-500 text-white text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-wider mb-2 shadow-sm">
+                        Économisez {{ round((1 - $flashProduct->prix_flash / $flashProduct->prix) * 100) }}%
+                    </span>
+                @endif
                 <p class="text-[11px] text-emerald-400 font-semibold mb-4"><i class="fa-solid fa-circle-check"></i> Livraison Gratuite incluse</p>
                 
                 <form action="{{ route('cart.add', $flashProduct->id) }}" method="GET" class="inline">
@@ -892,7 +834,7 @@
                 badge.classList.add('bg-orange-500', 'text-white', 'animate-pulse');
             } else {
                 badge.innerText = "En Stock";
-                badge.classList.add('bg-blue-500', 'text-white');
+                badge.classList.add('bg-emerald-500', 'text-white');
             }
 
             const modal = document.getElementById('quickViewModal');

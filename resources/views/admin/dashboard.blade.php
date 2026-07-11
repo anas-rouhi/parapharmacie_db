@@ -402,6 +402,7 @@
             let htmlContent = `
                 <html>
                 <head>
+    <link rel="icon" type="image/svg+xml" href="{{ asset('favicon.svg') }}">
                     <title>Bon de Commande - Signalement Stock</title>
                     <style>
                         body { font-family: 'Helvetica Neue', Arial, sans-serif; color: #333; padding: 40px; }
