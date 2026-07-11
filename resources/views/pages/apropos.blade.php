@@ -29,5 +29,6 @@
             </ul>
         </div>
     </main>
+    <x-site-footer />
 </body>
 </html>

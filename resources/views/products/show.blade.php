@@ -212,5 +212,6 @@
         });
     @endif
 </script>
+    <x-site-footer />
 </body>
 </html>

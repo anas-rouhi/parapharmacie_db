@@ -682,70 +682,7 @@
         </div>
     </div>
 
-    <footer class="bg-gray-950 text-gray-400 pt-16 pb-8 border-t border-gray-900 reveal">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 md:grid-cols-4 gap-10 mb-12">
-            
-            <div class="space-y-4">
-                <a href="/" class="text-2xl font-extrabold text-green-500 tracking-tight block">
-                    PARA<span class="text-blue-500">SANTE</span>
-                </a>
-                <p class="text-sm text-gray-400 leading-relaxed pt-2">
-                    Votre partenaire bien-être et santé de confiance à Marrakech. Nous offrons une sélection rigoureuse de produits parapharmaceutiques de qualité supérieure pour répondre à tous vos besoins.
-                </p>
-                <div class="flex items-center gap-4 pt-4">
-                    <a href="#" class="h-9 w-9 bg-gray-900 rounded-full flex items-center justify-center text-white hover:bg-blue-600 hover:scale-110 transition duration-200"><i class="fa-brands fa-facebook-f text-sm"></i></a>
-                    <a href="#" class="h-9 w-9 bg-gray-900 rounded-full flex items-center justify-center text-white hover:bg-pink-600 hover:scale-110 transition duration-200"><i class="fa-brands fa-instagram text-sm"></i></a>
-                    <a href="#" class="h-9 w-9 bg-gray-900 rounded-full flex items-center justify-center text-white hover:bg-green-600 hover:scale-110 transition duration-200"><i class="fa-brands fa-whatsapp text-sm"></i></a>
-                </div>
-            </div>
-
-            <div>
-                <h3 class="text-white font-bold text-base uppercase tracking-wider mb-5 border-l-4 border-green-500 pl-3">Liens Utiles</h3>
-                <ul class="space-y-3 text-sm">
-                    <li><a href="/" class="hover:text-green-400 transition flex items-center gap-1.5"> <i class="fa-solid fa-chevron-right text-[10px]"></i> Accueil</a></li>
-                    <li><button onclick="openFrontModal('aproposModal')" class="hover:text-green-400 transition flex items-center gap-1.5"> <i class="fa-solid fa-chevron-right text-[10px]"></i> À Propos de nous</button></li>
-                    <li><button onclick="openFrontModal('savModal')" class="hover:text-green-400 transition flex items-center gap-1.5"> <i class="fa-solid fa-chevron-right text-[10px]"></i> Service Après-Vente</button></li>
-                </ul>
-            </div>
-
-            <div>
-                <h3 class="text-white font-bold text-base uppercase tracking-wider mb-5 border-l-4 border-blue-500 pl-3">Contactez-nous</h3>
-                <ul class="space-y-4 text-sm text-gray-400">
-                    <li class="flex items-start gap-3">
-                        <i class="fa-solid fa-location-dot text-blue-500 mt-1"></i>
-                        <span>Boulevard Abdelkrim Al Khattabi, Gueliz,<br><b class="text-gray-300">Marrakech, Maroc</b></span>
-                    </li>
-                    <li class="flex items-center gap-3">
-                        <i class="fa-solid fa-phone text-green-500"></i>
-                        <span class="text-gray-300 font-medium">+212 6 00 00 00 00</span>
-                    </li>
-                    <li class="flex items-center gap-3">
-                        <i class="fa-solid fa-envelope text-red-400"></i>
-                        <span class="text-gray-300">contact@parapharmacie.ma</span>
-                    </li>
-                </ul>
-            </div>
-
-            <div>
-                <h3 class="text-white font-bold text-base uppercase tracking-wider mb-5 border-l-4 border-emerald-500 pl-3">Disponibilité</h3>
-                <p class="text-sm leading-relaxed mb-3">Notre équipe de pharmaciens et conseillers est à votre écoute :</p>
-                <div class="bg-gray-900/60 p-4 rounded-xl border border-gray-900">
-                    <p class="text-xs font-bold text-green-400 uppercase tracking-wider mb-1">📅 Lundi - Samedi</p>
-                    <p class="text-sm text-white font-semibold">09:00 H – 20:00 H</p>
-                </div>
-            </div>
-
-        </div>
-
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 border-t border-gray-950 pt-8 text-center text-xs flex flex-col sm:flex-row justify-between items-center gap-4 text-gray-500">
-            <p>&copy; 2026 ParaSante. Tous droits réservés. Réalisé dans le cadre du projet de fin d'études.</p>
-            <div class="flex gap-4 text-sm">
-                <i class="fa-brands fa-cc-visa text-gray-600 hover:text-white transition"></i>
-                <i class="fa-brands fa-cc-mastercard text-gray-600 hover:text-white transition"></i>
-                <i class="fa-solid fa-truck text-gray-600 hover:text-white transition"></i>
-            </div>
-        </div>
-    </footer>
+    <x-site-footer />
 
     <div id="aproposModal" class="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 hidden opacity-0 transition-opacity duration-300">
         <div class="bg-white rounded-3xl max-w-2xl w-full p-8 shadow-2xl relative transform scale-95 transition-transform duration-300 overflow-hidden">

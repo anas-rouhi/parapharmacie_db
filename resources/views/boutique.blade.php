@@ -106,15 +106,7 @@
     </main>
 
     <!-- FOOTER -->
-    <footer class="bg-slate-900 text-slate-400 text-xs mt-16">
-        <div class="max-w-7xl mx-auto px-6 py-8 flex flex-col sm:flex-row items-center justify-between gap-4">
-            <div class="inline-flex items-center gap-2">
-                <div class="h-7 w-7 rounded-lg bg-emerald-600 flex items-center justify-center font-bold text-white text-xs">🌱</div>
-                <span class="text-base font-black tracking-tight text-white">PARA<span class="text-emerald-500">SANTE</span></span>
-            </div>
-            <p>&copy; {{ date('Y') }} ParaSante. Tous droits réservés.</p>
-        </div>
-    </footer>
+    <x-site-footer />
 
     @include('products._quickview')
 

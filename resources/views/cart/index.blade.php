@@ -204,41 +204,7 @@
         @endif
     </main>
 
-    <footer class="bg-slate-900 text-slate-400 text-xs border-t border-slate-800 mt-24">
-        <div class="max-w-7xl mx-auto px-6 py-12 grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div class="space-y-3">
-                <div class="inline-flex items-center gap-2">
-                    <div class="h-7 w-7 rounded-lg bg-emerald-600 flex items-center justify-center font-bold text-white text-xs">🌱</div>
-                    <span class="text-base font-black tracking-tight text-white">PARA<span class="text-emerald-500">SANTE</span></span>
-                </div>
-                <p class="text-slate-400 leading-relaxed text-[11px]">Votre parapharmacie de confiance en ligne. Produits 100% certifiés, conseils d'experts et livraison rapide partout au Maroc.</p>
-            </div>
-            <div class="space-y-2">
-                <h4 class="font-bold text-white tracking-wide uppercase text-[11px] text-emerald-500">Liens Rapides</h4>
-                <div class="grid grid-cols-2 gap-2 text-[11px]">
-                    <a href="/" class="hover:text-white transition">Accueil</a>
-                    {{-- <a href="/boutique" class="hover:text-white transition">Boutique</a> --}}
-                    <a href="/contact" class="hover:text-white transition">Contact</a>
-                    {{-- <a href="/faq" class="hover:text-white transition">Aide & FAQ</a> --}}
-                </div>
-            </div>
-            <div class="space-y-3">
-                <h4 class="font-bold text-white tracking-wide uppercase text-[11px] text-emerald-500">Paiement Sécurisé</h4>
-                <p class="text-[11px] text-slate-400">Paiement cash à la livraison ou par carte bancaire sécurisée (CMI).</p>
-                <div class="flex gap-2 items-center text-[10px] text-slate-500 font-bold">
-                    <span class="bg-slate-800 px-2 py-1 rounded border border-slate-700/60 text-slate-300">💵 Cash On Delivery</span>
-                    <span class="bg-slate-800 px-2 py-1 rounded border border-slate-700/60 text-slate-300">💳 CMI / Visa</span>
-                </div>
-            </div>
-        </div>
-        <div class="max-w-7xl mx-auto px-6 py-5 border-t border-slate-800/60 flex flex-col sm:flex-row items-center justify-between gap-4 text-slate-500 text-[11px]">
-            <p>&copy; 2026 ParaSante. Tous droits réservés.</p>
-            <div class="flex gap-4">
-                <a href="#" class="hover:text-slate-300 transition">Mentions légales</a>
-                <a href="#" class="hover:text-slate-300 transition">CGV</a>
-            </div>
-        </div>
-    </footer>
+    <x-site-footer />
 
 </body>
 </html>
