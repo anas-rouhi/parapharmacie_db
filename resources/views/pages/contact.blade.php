@@ -13,14 +13,7 @@
 </head>
 <body class="bg-gray-50 text-gray-800 antialiased">
 
-    <nav class="bg-white border-b py-4 shadow-sm">
-        <div class="max-w-7xl mx-auto px-6 flex justify-between items-center">
-            <a href="/" class="text-2xl font-extrabold text-green-600">PARA<span class="text-blue-600">SANTE</span></a>
-            <a href="/" class="text-sm font-semibold text-gray-500 bg-gray-100 hover:bg-gray-200 px-4 py-2 rounded-xl transition">
-                ← Retour à l'accueil
-            </a>
-        </div>
-    </nav>
+    <x-site-header />
 
     <main class="max-w-5xl mx-auto px-6 py-12 lg:py-20">
         

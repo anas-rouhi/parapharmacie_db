@@ -16,6 +16,8 @@ use Illuminate\Support\Facades\Route;
 Route::post('/contact-submit', [\App\Http\Controllers\ContactController::class, 'store'])->name('contact.store');
 // 1. الصفحة الرئيسية والمنتجات (متاحة للجميع)
 Route::get('/', [ProductController::class, 'index'])->name('home');
+Route::get('/boutique', [ProductController::class, 'boutique'])->name('boutique');
+Route::get('/filter-produits', [ProductController::class, 'filterAjax'])->name('products.filterAjax');
 Route::get('/live-search', [ProductController::class, 'liveSearch'])->name('products.liveSearch');
 Route::get('/diagnostic-submit', [ProductController::class, 'diagnosticSkin'])->name('products.diagnostic');
 Route::get('/product/{id}', [ProductController::class, 'show'])->name('products.show');

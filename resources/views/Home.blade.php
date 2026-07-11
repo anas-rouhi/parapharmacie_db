@@ -72,108 +72,7 @@
 <body class="bg-gray-50 antialiased text-gray-800">
 
     <!-- 🌌 الـ Navbar المستقبلية (تأثير الزجاج الفخم مع خط إضاءة تفاعلي من التحت) -->
-    <nav class="bg-white/80 backdrop-blur-xl border-b border-green-500/10 sticky top-0 z-40 shadow-[0_2px_20px_-5px_rgba(34,197,94,0.08)] transition-all duration-300">
-        <!-- خط علوي متحرك خفيف كيعطي مظهر تكنولوجي حديث -->
-        <div class="h-[3px] w-full bg-gradient-to-r from-green-500 via-teal-400 to-blue-600 bg-[length:200%_auto] animate-pulse"></div>
-        
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between h-20 items-center gap-4">
-                
-                <!-- الـ Logo مع توهج (Glow Effect) فخم عند مرور الماوس -->
-                <div class="flex items-center flex-shrink-0 transform hover:scale-105 hover:drop-shadow-[0_0_15px_rgba(34,197,94,0.4)] transition duration-300">
-                    <a href="/" class="text-2xl font-black text-green-600 tracking-tight">
-                        PARA<span class="text-blue-600 relative">SANTE<span class="absolute -top-1 -right-2 text-[10px] text-teal-400 animate-ping">✦</span></span>
-                    </a>
-                </div>
-
-                <!-- القائمة الرئيسية مع تأثير خط متحرك تحت الروابط (Underline Slide) -->
-                <div class="hidden lg:flex items-center gap-6 text-sm font-bold text-gray-600 flex-shrink-0">
-                    <a href="/" class="text-green-600 hover:text-green-700 relative py-1 after:absolute after:bottom-0 after:left-0 after:w-full after:h-0.5 after:bg-green-600">Accueil</a>
-                    <a href="{{ route('pages.apropos') }}" class="hover:text-green-600 transition relative py-1 group">
-                        À Propos
-                        <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-green-500 transition-all duration-300 group-hover:w-full"></span>
-                    </a>
-                    <a href="{{ route('pages.sav') }}" class="hover:text-green-600 transition relative py-1 group">
-                        Service SAV
-                        <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-green-500 transition-all duration-300 group-hover:w-full"></span>
-                    </a>
-                    <a href="{{ route('pages.contact') }}" class="hover:text-green-600 transition relative py-1 group">
-                        Contact
-                        <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-green-500 transition-all duration-300 group-hover:w-full"></span>
-                    </a>
-                </div>
-
-                <!-- شريط البحث الذكي متطور وأكثر أناقة -->
-                <div class="flex-1 max-w-md mx-4 relative hidden md:block">
-                    <div class="flex items-center bg-slate-50/60 border border-slate-200/80 rounded-full focus-within:border-green-500 focus-within:ring-4 focus-within:ring-green-100 focus-within:bg-white transition duration-300 shadow-inner">
-                        <span class="pl-4 text-slate-400">
-                            <i class="fa-solid fa-magnifying-glass text-xs animate-pulse"></i>
-                        </span>
-                        <input 
-                            type="text" 
-                            id="live-search-input" 
-                            autocomplete="off"
-                            placeholder="Rechercher un produit, une marque..." 
-                            class="w-full py-2.5 px-3 text-xs text-slate-700 bg-transparent rounded-full focus:outline-none placeholder:text-slate-400"
-                        >
-                    </div>
-
-                    <div 
-                        id="search-results-dropdown" 
-                        class="hidden absolute left-0 right-0 mt-3 bg-white/95 backdrop-blur-xl rounded-2xl shadow-2xl border border-slate-100 max-h-96 overflow-y-auto z-50 divide-y divide-slate-50"
-                    >
-                    </div>
-                </div>
-
-                <!-- أزرار الحساب والسلة المعدلة بتأثيرات حركية فائقة النعومة -->
-                <div class="flex items-center gap-4 flex-shrink-0">
-                    
-                    <a href="{{ route('cart.index') }}" class="relative flex items-center text-gray-700 hover:text-green-600 transition p-2.5 bg-gray-50 border border-gray-100 hover:border-green-200 hover:bg-green-50/60 rounded-full hover:scale-110 duration-300 group">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 transform group-hover:rotate-12 transition" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
-                        </svg>
-                        
-                        @if(session('panier') && count(session('panier')) > 0)
-                            <span class="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-gradient-to-r from-red-500 to-pink-500 text-[10px] font-black text-white shadow-md shadow-red-500/30 animate-bounce">
-                                @php
-                                    $item_count = 0;
-                                    foreach(session('panier') as $id => $details) {
-                                        $item_count += $details['quantite'];
-                                    }
-                                @endphp
-                                {{ $item_count }}
-                            </span>
-                        @endif
-                    </a>
-
-                    @auth
-                        <div class="flex items-center gap-2 bg-gray-50/80 p-1 rounded-full border border-gray-200/60 shadow-xs backdrop-blur-md">
-                            <span class="text-xs font-bold text-gray-700 pl-2">👋 {{ auth()->user()->name }}</span>
-                            
-                            <a href="{{ route('client.commandes') }}" class="text-[10px] font-black text-gray-600 hover:text-green-600 bg-white border border-gray-200 px-3 py-1.5 rounded-full transition-all hover:shadow-xs uppercase tracking-wider flex items-center gap-1">
-                                📦 Commandes
-                            </a>
-
-                            <form method="POST" action="{{ route('logout') }}" class="inline m-0">
-                                @php echo csrf_field(); @endphp
-                                <button type="submit" class="text-[10px] font-black text-red-600 hover:text-white bg-red-50 hover:bg-gradient-to-r hover:from-red-500 hover:to-pink-500 px-3 py-1.5 rounded-full transition-all uppercase tracking-wider border-none cursor-pointer shadow-xs">
-                                    Quitter
-                                </button>
-                            </form>
-                        </div>
-                    @else
-                        <div class="flex items-center gap-3">
-                            <a href="{{ route('login') }}" class="text-xs font-bold text-gray-600 hover:text-green-600 transition">Connexion</a>
-                            <a href="{{ route('register') }}" class="bg-gradient-to-r from-green-600 to-teal-600 text-white text-[11px] font-black px-5 py-2.5 rounded-full hover:from-green-700 hover:to-teal-700 transition shadow-md shadow-green-500/20 transform hover:scale-105 duration-200 uppercase tracking-wider">
-                                S'inscrire
-                            </a>
-                        </div>
-                    @endauth
-
-                </div>
-            </div>
-        </div>
-    </nav>
+    <x-site-header />
 
     <!-- التنبيهات المضافة تلقائياً بـ FadeIn النظيف -->
     @if(session('success'))
@@ -315,7 +214,7 @@
             </p>
             
             <div class="flex flex-col sm:flex-row justify-center lg:justify-start gap-4 pt-4">
-                <a href="#produits" class="bg-gradient-to-r from-green-600 to-teal-600 hover:from-green-700 hover:to-teal-700 text-white font-bold px-8 py-4 rounded-2xl shadow-lg shadow-green-200 transition transform hover:-translate-y-0.5 duration-200 text-center">
+                <a href="{{ route('boutique') }}" class="bg-gradient-to-r from-green-600 to-teal-600 hover:from-green-700 hover:to-teal-700 text-white font-bold px-8 py-4 rounded-2xl shadow-lg shadow-green-200 transition transform hover:-translate-y-0.5 duration-200 text-center">
                     🛒 Explorer la Boutique
                 </a>
                
@@ -394,72 +293,53 @@
         <p class="text-sm text-gray-400 mt-1">Trouvez rapidement la solution adaptée à votre profil</p>
     </div>
     
+    @php
+        // 🎨 Habillage (icône, couleur, sous-titre) par nom de catégorie.
+        // Chaque entrée = [gradient, border, borderHover, iconBg, iconText, titleHover, icon, sub]
+        $besoinStyles = [
+            'Anti-Imperfections' => ['from-red-50/50', 'border-red-100/40', 'hover:border-red-200', 'bg-red-100', 'text-red-600', 'group-hover:text-red-600', 'fa-wand-magic-sparkles', 'Boutons & Taches'],
+            'Écran Solaire'      => ['from-amber-50/50', 'border-amber-100/40', 'hover:border-amber-200', 'bg-amber-100', 'text-amber-600', 'group-hover:text-amber-600', 'fa-sun', 'Protection UV'],
+            'Hydratation'        => ['from-blue-50/50', 'border-blue-100/40', 'hover:border-blue-200', 'bg-blue-100', 'text-blue-600', 'group-hover:text-blue-600', 'fa-droplet', 'Peaux Sèches'],
+            'Énergie & Bio'      => ['from-emerald-50/50', 'border-emerald-100/40', 'hover:border-emerald-200', 'bg-emerald-100', 'text-emerald-600', 'group-hover:text-emerald-600', 'fa-seedling', 'Vitamines & Forme'],
+            'Anti-Âge & Rides'   => ['from-purple-50/50', 'border-purple-100/40', 'hover:border-purple-200', 'bg-purple-100', 'text-purple-600', 'group-hover:text-purple-600', 'fa-hourglass-half', 'Rétinol & Fermeté'],
+            'Bébé & Maman'       => ['from-pink-50/50', 'border-pink-100/40', 'hover:border-pink-200', 'bg-pink-100', 'text-pink-600', 'group-hover:text-pink-600', 'fa-baby', 'Soins Doux & Laits'],
+            'Soins Capillaires'  => ['from-indigo-50/50', 'border-indigo-100/40', 'hover:border-indigo-200', 'bg-indigo-100', 'text-indigo-600', 'group-hover:text-indigo-600', 'fa-scissors', 'Chute & Shampoing'],
+            'Hygiène & Corps'    => ['from-teal-50/50', 'border-teal-100/40', 'hover:border-teal-200', 'bg-teal-100', 'text-teal-600', 'group-hover:text-teal-600', 'fa-shower', 'Déodorants & Gels'],
+        ];
+
+        // Palette de secours (rotation) pour toute catégorie non listée ci-dessus
+        $besoinFallback = [
+            ['from-green-50/50', 'border-green-100/40', 'hover:border-green-200', 'bg-green-100', 'text-green-600', 'group-hover:text-green-600'],
+            ['from-cyan-50/50', 'border-cyan-100/40', 'hover:border-cyan-200', 'bg-cyan-100', 'text-cyan-600', 'group-hover:text-cyan-600'],
+            ['from-rose-50/50', 'border-rose-100/40', 'hover:border-rose-200', 'bg-rose-100', 'text-rose-600', 'group-hover:text-rose-600'],
+            ['from-orange-50/50', 'border-orange-100/40', 'hover:border-orange-200', 'bg-orange-100', 'text-orange-600', 'group-hover:text-orange-600'],
+        ];
+    @endphp
+
     <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-        
-        <a href="{{ url('/?search=anti') }}#produits" class="group bg-gradient-to-b from-red-50/50 to-white p-5 rounded-2xl border border-red-100/40 text-center hover:shadow-xl hover:border-red-200 transition duration-300">
-            <div class="h-12 w-12 bg-red-100 text-red-600 rounded-xl flex items-center justify-center mx-auto mb-3 transform group-hover:rotate-6 transition duration-300">
-                <i class="fa-solid fa-wand-magic-sparkles text-xl"></i>
-            </div>
-            <h3 class="font-bold text-gray-800 text-sm group-hover:text-red-600 transition">Anti-Imperfections</h3>
-            <p class="text-[11px] text-gray-400 mt-1 font-medium">Boutons & Taches</p>
-        </a>
+        @forelse($categories as $index => $cat)
+            @php
+                if (isset($besoinStyles[$cat->nom])) {
+                    [$grad, $border, $borderHover, $iconBg, $iconText, $titleHover, $icon, $sub] = $besoinStyles[$cat->nom];
+                } else {
+                    $fb = $besoinFallback[$index % count($besoinFallback)];
+                    [$grad, $border, $borderHover, $iconBg, $iconText, $titleHover] = $fb;
+                    $icon = 'fa-capsules';
+                    $sub = 'Découvrir';
+                }
+            @endphp
 
-        <a href="{{ url('/?category=1') }}#produits" class="group bg-gradient-to-b from-amber-50/50 to-white p-5 rounded-2xl border border-amber-100/40 text-center hover:shadow-xl hover:border-amber-200 transition duration-300">
-            <div class="h-12 w-12 bg-amber-100 text-amber-600 rounded-xl flex items-center justify-center mx-auto mb-3 transform group-hover:scale-110 transition duration-300">
-                <i class="fa-solid fa-sun text-xl"></i>
-            </div>
-            <h3 class="font-bold text-gray-800 text-sm group-hover:text-amber-600 transition">Écran Solaire</h3>
-            <p class="text-[11px] text-gray-400 mt-1 font-medium">Protection UV</p>
-        </a>
-
-        <a href="{{ url('/?category=2') }}#produits" class="group bg-gradient-to-b from-blue-50/50 to-white p-5 rounded-2xl border border-blue-100/40 text-center hover:shadow-xl hover:border-blue-200 transition duration-300">
-            <div class="h-12 w-12 bg-blue-100 text-blue-600 rounded-xl flex items-center justify-center mx-auto mb-3 transform group-hover:-rotate-6 transition duration-300">
-                <i class="fa-solid fa-droplet text-xl"></i>
-            </div>
-            <h3 class="font-bold text-gray-800 text-sm group-hover:text-blue-600 transition">Hydratation</h3>
-            <p class="text-[11px] text-gray-400 mt-1 font-medium">Peaux Sèches</p>
-        </a>
-
-        <a href="{{ url('/?search=bio') }}#produits" class="group bg-gradient-to-b from-emerald-50/50 to-white p-5 rounded-2xl border border-emerald-100/40 text-center hover:shadow-xl hover:border-emerald-200 transition duration-300">
-            <div class="h-12 w-12 bg-emerald-100 text-emerald-600 rounded-xl flex items-center justify-center mx-auto mb-3 transform group-hover:scale-110 transition duration-300">
-                <i class="fa-solid fa-seedling text-xl"></i>
-            </div>
-            <h3 class="font-bold text-gray-800 text-sm group-hover:text-emerald-600 transition">Énergie & Bio</h3>
-            <p class="text-[11px] text-gray-400 mt-1 font-medium">Vitamines & Forme</p>
-        </a>
-
-        <a href="{{ url('/?search=age') }}#produits" class="group bg-gradient-to-b from-purple-50/50 to-white p-5 rounded-2xl border border-purple-100/40 text-center hover:shadow-xl hover:border-purple-200 transition duration-300">
-            <div class="h-12 w-12 bg-purple-100 text-purple-600 rounded-xl flex items-center justify-center mx-auto mb-3 transform group-hover:rotate-12 transition duration-300">
-                <i class="fa-solid fa-hourglass-half text-xl"></i>
-            </div>
-            <h3 class="font-bold text-gray-800 text-sm group-hover:text-purple-600 transition">Anti-Âge & Rides</h3>
-            <p class="text-[11px] text-gray-400 mt-1 font-medium">Rétinol & Fermeté</p>
-        </a>
-
-        <a href="{{ url('/?search=bebe') }}#produits" class="group bg-gradient-to-b from-pink-50/50 to-white p-5 rounded-2xl border border-pink-100/40 text-center hover:shadow-xl hover:border-pink-200 transition duration-300">
-            <div class="h-12 w-12 bg-pink-100 text-pink-600 rounded-xl flex items-center justify-center mx-auto mb-3 transform group-hover:scale-110 transition duration-300">
-                <i class="fa-solid fa-baby text-xl"></i>
-            </div>
-            <h3 class="font-bold text-gray-800 text-sm group-hover:text-pink-600 transition">Bébé & Maman</h3>
-            <p class="text-[11px] text-gray-400 mt-1 font-medium">Soins Doux & Laits</p>
-        </a>
-
-        <a href="{{ url('/?category=3') }}#produits" class="group bg-gradient-to-b from-indigo-50/50 to-white p-5 rounded-2xl border border-indigo-100/40 text-center hover:shadow-xl hover:border-indigo-200 transition duration-300">
-            <div class="h-12 w-12 bg-indigo-100 text-indigo-600 rounded-xl flex items-center justify-center mx-auto mb-3 transform group-hover:-rotate-6 transition duration-300">
-                <i class="fa-solid fa-scissors text-xl"></i>
-            </div>
-            <h3 class="font-bold text-gray-800 text-sm group-hover:text-indigo-600 transition">Soins Capillaires</h3>
-            <p class="text-[11px] text-gray-400 mt-1 font-medium">Chute & Shampoing</p>
-        </a>
-
-        <a href="{{ url('/?search=corps') }}#produits" class="group bg-gradient-to-b from-teal-50/50 to-white p-5 rounded-2xl border border-teal-100/40 text-center hover:shadow-xl hover:border-teal-200 transition duration-300">
-            <div class="h-12 w-12 bg-teal-100 text-teal-600 rounded-xl flex items-center justify-center mx-auto mb-3 transform group-hover:scale-110 transition duration-300">
-                <i class="fa-solid fa-shower text-xl"></i>
-            </div>
-            <h3 class="font-bold text-gray-800 text-sm group-hover:text-teal-600 transition">Hygiène & Corps</h3>
-            <p class="text-[11px] text-gray-400 mt-1 font-medium">Déodorants & Gels</p>
-        </a>
-
+            <a href="{{ route('boutique', ['category' => $cat->id]) }}"
+               class="group bg-gradient-to-b {{ $grad }} to-white p-5 rounded-2xl border {{ $border }} text-center hover:shadow-xl {{ $borderHover }} transition duration-300">
+                <div class="h-12 w-12 {{ $iconBg }} {{ $iconText }} rounded-xl flex items-center justify-center mx-auto mb-3 transform group-hover:scale-110 transition duration-300">
+                    <i class="fa-solid {{ $icon }} text-xl"></i>
+                </div>
+                <h3 class="font-bold text-gray-800 text-sm {{ $titleHover }} transition truncate">{{ $cat->nom }}</h3>
+                <p class="text-[11px] text-gray-400 mt-1 font-medium">{{ $sub }}</p>
+            </a>
+        @empty
+            <p class="col-span-full text-center text-sm text-gray-400 py-8">Aucune catégorie disponible pour le moment.</p>
+        @endforelse
     </div>
 </section>
 
@@ -684,38 +564,6 @@
             </div>
         </div>
 
-            <div id="diag-step-2" class="diag-step hidden">
-                <span class="text-xs font-bold text-indigo-600 uppercase tracking-wider">Étape 2 sur 3</span>
-                <h4 class="text-lg font-extrabold text-slate-900 mt-1 mb-6">Quelle est votre préoccupation majeure ?</h4>
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <label class="flex items-center gap-4 p-4 border-2 border-slate-100 rounded-2xl hover:border-emerald-500 cursor-pointer transition group">
-                        <input type="radio" name="skin_problem" value="acne" class="w-4 h-4 text-emerald-600 focus:ring-emerald-500">
-                        <div>
-                            <p class="text-sm font-bold text-slate-800 group-hover:text-emerald-600 transition">Boutons & Acné</p>
-                            <p class="text-xs text-slate-400 font-medium">Imperfections, points noirs</p>
-                        </div>
-                    </label>
-                    <label class="flex items-center gap-4 p-4 border-2 border-slate-100 rounded-2xl hover:border-emerald-500 cursor-pointer transition group">
-                        <input type="radio" name="skin_problem" value="taches" class="w-4 h-4 text-emerald-600 focus:ring-emerald-500">
-                        <div>
-                            <p class="text-sm font-bold text-slate-800 group-hover:text-emerald-600 transition">Taches & Teint terne</p>
-                            <p class="text-xs text-slate-400 font-medium">Hyperpigmentation, manque d'éclat</p>
-                        </div>
-                    </label>
-                    <label class="flex items-center gap-4 p-4 border-2 border-slate-100 rounded-2xl hover:border-emerald-500 cursor-pointer transition group">
-                        <input type="radio" name="skin_problem" value="rides" class="w-4 h-4 text-emerald-600 focus:ring-emerald-500">
-                        <div>
-                            <p class="text-sm font-bold text-slate-800 group-hover:text-emerald-600 transition">Rides & Signes d'âge</p>
-                            <p class="text-xs text-slate-400 font-medium">Relâchement, ridules d'expression</p>
-                        </div>
-                    </label>
-                </div>
-                <div class="mt-8 flex justify-between">
-                    <button onclick="nextDiagStep(1)" class="border border-slate-200 text-slate-600 text-xs font-bold px-6 py-3 rounded-xl hover:bg-slate-50 transition">Retour</button>
-                    <button onclick="submitDiagnostic()" class="bg-emerald-600 text-white text-xs font-bold px-6 py-3 rounded-xl hover:bg-emerald-700 transition">Voir ma routine</button>
-                </div>
-            </div>
-
             <div id="diag-step-result" class="diag-step hidden">
                 <div class="text-center mb-6">
                     <span class="text-3xl">✨</span>
@@ -762,89 +610,45 @@
         @endif
     </div>
 
-    <div class="flex flex-wrap items-center gap-3 mb-10 bg-white p-4 rounded-2xl border border-gray-100 shadow-sm">
-        <span class="text-sm font-bold text-gray-400 uppercase tracking-wider mr-2 flex items-center gap-1">
-            <i class="fa-solid fa-filter text-xs"></i> Filtrer par :
-        </span>
-        
-        <a href="{{ url('/') }}#produits" 
-           class="px-5 py-2.5 rounded-full text-xs font-bold uppercase tracking-wider transition duration-200 {{ !request('category') ? 'bg-green-600 text-white shadow-md shadow-green-600/20' : 'bg-gray-50 text-gray-600 hover:bg-gray-100 border border-gray-100' }}">
-              Tous les produits
-        </a>
+    <div class="mb-10 bg-white p-4 rounded-2xl border border-gray-100 shadow-sm">
+        <div class="flex items-center gap-3 overflow-x-auto no-scrollbar pb-1 sm:flex-wrap sm:overflow-visible" id="category-filter">
+            <span class="text-sm font-bold text-gray-400 uppercase tracking-wider mr-1 flex items-center gap-1.5 shrink-0">
+                <i class="fa-solid fa-filter text-xs"></i> Filtrer par :
+            </span>
 
-        @foreach($categories as $cat)
-            <a href="{{ url('/?category=' . $cat->id) }}#produits" 
-               class="px-5 py-2.5 rounded-full text-xs font-bold uppercase tracking-wider transition duration-200 {{ request('category') == $cat->id ? 'bg-green-600 text-white shadow-md shadow-green-600/20' : 'bg-gray-50 text-gray-600 hover:bg-gray-100 border border-gray-100' }}">
-                {{ $cat->nom }}
+            <a href="{{ route('boutique') }}" data-category=""
+               onclick="filterByCategory(''); return false;"
+               class="filter-chip shrink-0 px-5 py-2.5 rounded-full text-xs font-bold uppercase tracking-wider transition duration-200 {{ !request('category') ? 'is-active bg-green-600 text-white shadow-md shadow-green-600/20' : 'bg-gray-50 text-gray-600 hover:bg-gray-100 border border-gray-100' }}">
+                  Tous les produits
             </a>
-        @endforeach
+
+            @foreach($categories as $cat)
+                <a href="{{ route('boutique', ['category' => $cat->id]) }}" data-category="{{ $cat->id }}"
+                   onclick="filterByCategory('{{ $cat->id }}'); return false;"
+                   class="filter-chip shrink-0 px-5 py-2.5 rounded-full text-xs font-bold uppercase tracking-wider transition duration-200 {{ request('category') == $cat->id ? 'is-active bg-green-600 text-white shadow-md shadow-green-600/20' : 'bg-gray-50 text-gray-600 hover:bg-gray-100 border border-gray-100' }}">
+                    {{ $cat->nom }}
+                </a>
+            @endforeach
+
+            <span id="produits-count" class="shrink-0 ml-auto text-[11px] font-bold text-gray-400 bg-gray-50 border border-gray-100 px-3 py-1.5 rounded-full whitespace-nowrap">
+                {{ $totalProduits }} produit{{ $totalProduits > 1 ? 's' : '' }}
+            </span>
+        </div>
     </div>
 
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-        @forelse($produits as $item)
-            <div class="group bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-2xl hover:-translate-y-2 transition duration-300 flex flex-col justify-between relative">
-                <div>
-                    <div class="h-52 bg-gray-50 relative overflow-hidden">
-                        <a href="{{ route('products.show', $item->id) }}" class="block h-full w-full">
-                            @if($item->image)
-                                <img src="{{ asset('images/products/' . $item->image) }}" alt="{{ $item->nom }}" class="h-full w-full object-cover group-hover:scale-110 transition duration-500">
-                            @else
-                                <div class="absolute inset-0 flex items-center justify-center text-gray-400 bg-gray-100">
-                                    <span class="text-xs italic font-semibold uppercase tracking-widest">Image non disponible</span>
-                                </div>
-                            @endif
-                        </a>
-                        <span class="absolute top-3 left-3 bg-green-500 text-white text-[9px] px-2.5 py-1 rounded-md font-black uppercase tracking-wider z-10 shadow-sm">Nouveau</span>
+    {{-- Grille (8 produits max sur l'accueil) — remplacée en AJAX au clic sur une catégorie --}}
+    <div id="produits-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 transition-opacity duration-200">
+        @include('products._cards')
+    </div>
 
-                        @if($item->stock <= 0)
-                            <span class="absolute top-3 right-3 bg-red-600 text-white text-[9px] px-2.5 py-1 rounded-md font-black uppercase tracking-wider z-10 shadow-sm">Rupture</span>
-                        @elseif($item->stock <= 3)
-                            <span class="absolute top-3 right-3 bg-orange-500 text-white text-[9px] px-2.5 py-1 rounded-md font-black uppercase tracking-wider animate-pulse z-10 shadow-sm">Stock Limité ({{ $item->stock }})</span>
-                        @else
-                            <span class="absolute top-3 right-3 bg-blue-500 text-white text-[9px] px-2.5 py-1 rounded-md font-black uppercase tracking-wider z-10 shadow-sm">En Stock</span>
-                        @endif
-
-                        <div class="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition duration-300 flex items-center justify-center z-20">
-                            <button type="button" 
-                                    onclick="openQuickView('{{ $item->nom }}', '{{ $item->prix }}', '{{ $item->image ? asset('images/products/' . $item->image) : '' }}', '{{ addslashes($item->description) }}', '{{ route('cart.add', $item->id) }}', '{{ $item->stock }}')" 
-                                    class="bg-white/90 backdrop-blur text-gray-900 text-xs font-bold py-2.5 px-4 rounded-xl shadow-lg hover:bg-green-600 hover:text-white transition transform translate-y-4 group-hover:translate-y-0 duration-300">
-                                <i class="fa-solid fa-eye mr-1"></i> Aperçu rapide
-                            </button>
-                        </div>
-                    </div>
-                    
-                    <div class="p-6">
-                        <p class="text-[10px] text-green-600 font-extrabold uppercase tracking-widest mb-1.5">
-                            {{ $item->categorie->nom ?? 'Parapharmacie' }}
-                        </p>
-                        <a href="{{ route('products.show', $item->id) }}">
-                            <h3 class="text-base font-bold text-gray-800 group-hover:text-green-600 transition truncate">{{ $item->nom }}</h3>
-                        </a>
-                        <p class="text-xs text-gray-400 mt-2 line-clamp-2 leading-relaxed">{{ $item->description }}</p>
-                    </div>
-                </div>
-
-                <div class="p-6 pt-0">
-                    <div class="mt-2 flex items-center justify-between border-t border-gray-50 pt-4">
-                        <span class="text-lg font-black text-gray-900">{{ $item->prix }} DH</span>
-                        
-                        <a href="{{ route('cart.add', $item->id) }}?buy_type=normal" class="bg-gray-900 text-white p-3 rounded-xl hover:bg-green-600 hover:shadow-lg hover:shadow-green-600/20 transition transform active:scale-95 duration-200 flex items-center justify-center shadow-md">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
-                            </svg>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        @empty
-            <div class="col-span-full py-20 text-center bg-white rounded-3xl border border-gray-100 shadow-sm">
-                <div class="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-4 text-gray-300">
-                    <i class="fa-solid fa-face-frown text-3xl"></i>
-                </div>
-                <p class="text-gray-500 font-semibold text-lg">Aucun produit trouvé</p>
-                <p class="text-sm text-gray-400 mt-1">Essayez d'autres mots clés ou catégories.</p>
-            </div>
-        @endforelse
+    {{-- Bouton "Voir plus" → page Boutique complète avec recherche --}}
+    <div id="voir-plus-wrap" class="mt-12 flex justify-center {{ $totalProduits > 8 ? '' : 'hidden' }}">
+        <a id="voir-plus-btn" href="{{ route('boutique', request('category') ? ['category' => request('category')] : []) }}"
+           class="group inline-flex items-center gap-2 bg-gray-900 text-white text-sm font-bold px-8 py-4 rounded-2xl hover:bg-green-600 transition duration-300 shadow-lg hover:shadow-green-600/25 active:scale-95">
+            <i class="fa-solid fa-store text-xs"></i>
+            Voir tous les produits
+            <i class="fa-solid fa-arrow-right-long text-xs group-hover:translate-x-1 transition"></i>
+        </a>
     </div>
 </main>
 
@@ -1061,6 +865,67 @@
         }
 
         // دالة الـ Quick View الديناميكية الجديدة
+        // ⚡ Filtrage par catégorie en AJAX (sans recharger la page)
+        // Appelable depuis les chips "Filtrer par" ET les cartes "Vos Besoins Spécifiques".
+        // categoryId = '' pour "Tous les produits". scroll = true pour défiler vers la grille.
+        function filterByCategory(categoryId, scroll = false) {
+            categoryId = categoryId ? String(categoryId) : '';
+
+            const grid = document.getElementById('produits-grid');
+            const countEl = document.getElementById('produits-count');
+            const voirPlusWrap = document.getElementById('voir-plus-wrap');
+            const voirPlusBtn = document.getElementById('voir-plus-btn');
+
+            // Mettre à jour le chip actif (retrouvé via data-category, pas via l'élément cliqué)
+            document.querySelectorAll('.filter-chip').forEach(c => {
+                const isTarget = (c.dataset.category || '') === categoryId;
+                c.classList.toggle('is-active', isTarget);
+                c.classList.toggle('bg-green-600', isTarget);
+                c.classList.toggle('text-white', isTarget);
+                c.classList.toggle('shadow-md', isTarget);
+                c.classList.toggle('shadow-green-600/20', isTarget);
+                c.classList.toggle('bg-gray-50', !isTarget);
+                c.classList.toggle('text-gray-600', !isTarget);
+                c.classList.toggle('hover:bg-gray-100', !isTarget);
+                c.classList.toggle('border', !isTarget);
+                c.classList.toggle('border-gray-100', !isTarget);
+            });
+
+            // Défiler vers la grille (utile depuis les cartes "Besoins")
+            if (scroll) {
+                document.getElementById('produits').scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+
+            // État de chargement
+            grid.style.opacity = '0.35';
+
+            const base = '{{ route('products.filterAjax') }}';
+            const url = base + (categoryId ? ('?category=' + encodeURIComponent(categoryId)) : '');
+
+            fetch(url, { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
+                .then(r => r.json())
+                .then(data => {
+                    grid.innerHTML = data.html;
+                    countEl.textContent = data.total + ' produit' + (data.total > 1 ? 's' : '');
+
+                    const boutiqueBase = '{{ route('boutique') }}';
+                    voirPlusBtn.href = boutiqueBase + (categoryId ? ('?category=' + encodeURIComponent(categoryId)) : '');
+                    voirPlusWrap.classList.toggle('hidden', data.total <= data.shown);
+
+                    // Mettre à jour l'URL sans recharger (partage / retour)
+                    const newUrl = categoryId ? ('?category=' + encodeURIComponent(categoryId) + '#produits') : ('{{ url('/') }}#produits');
+                    history.replaceState(null, '', newUrl);
+
+                    grid.style.opacity = '1';
+                })
+                .catch(() => {
+                    // Fallback : navigation classique vers la Boutique
+                    window.location.href = categoryId
+                        ? '{{ route('boutique') }}?category=' + encodeURIComponent(categoryId)
+                        : '{{ route('boutique') }}';
+                });
+        }
+
         function openQuickView(nom, prix, imageSrc, description, actionUrl, stock) {
             document.getElementById('qv-nom').innerText = nom;
             document.getElementById('qv-prix').innerText = prix + ' DH';

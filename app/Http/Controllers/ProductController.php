@@ -13,40 +13,122 @@ class ProductController extends Controller
     /**
      * 1. L-PAGE RA'ISIYA (HOME) + LA RECHERCHE IHTIRAFIYA
      */
+    // 🔢 عدد المنتجات اللي كيبانو ف الصفحة الرئيسية (الباقي كيمشي للـ Boutique)
+    private const HOME_PRODUCTS_LIMIT = 8;
+
     public function index(Request $request)
     {
         $categories = Category::all();
 
-        // 1. كنجيبو الكويري مع الـ relation ديال الكاتيبوري
-        $query = Produit::with('categorie');
+        // الصفحة الرئيسية كتعرض غير 8 منتجات (Aperçu). الفلتر الكامل + البحث كاين ف /boutique
+        $categoryId = $request->query('category');
 
-        // 🟢 شرط أساسي: كنجيبو غير المنتجات اللي متوفرة ف الـ Stock
-        $query->where('stock', '>', 0);
+        $produits = $this->filteredProductsQuery($categoryId)
+            ->latest()
+            ->take(self::HOME_PRODUCTS_LIMIT)
+            ->get();
 
-        // 2️⃣ الفيلتر بالكاتيبوري (إيلا كليكاو على شي كاتيبوري)
-        if ($request->has('category') && $request->category != '') {
-            $query->where('category_id', $request->category);
-        }
-
-        // 3️⃣ الفيلتر بالبحث (ديال الـ 8 د الـ Besoins أو أي خانة بحث)
-        if ($request->has('search') && $request->search != '') {
-            $search = $request->search;
-            $query->where(function ($q) use ($search) {
-                $q->where('nom', 'LIKE', "%{$search}%")
-                    ->orWhere('description', 'LIKE', "%{$search}%");
-            });
-        }
-
-        // 4️⃣ 🌟 السطر المصلوح: كنجيبو النتيجة من الـ $query المفلتر نيت ومرتب من الأحدث
-        $produits = $query->latest()->get();
+        // العدد الإجمالي (باش نعرفو واش نبينو زر "Voir plus")
+        $totalProduits = $this->filteredProductsQuery($categoryId)->count();
 
         // ⚡ كنجيبو أول برودوي عليه تخفيض فلاش ومازال الوقت ديالو ما تسالا
         $flashProduct = Produit::where('is_flash_sale', true)
             ->where('flash_sale_end', '>', now())
             ->first();
 
-        // كنصيفطو كاع المتغيرات بسلامة للـ view
-        return view('home', compact('produits', 'categories', 'flashProduct'));
+        return view('home', compact('produits', 'categories', 'flashProduct', 'totalProduits'));
+    }
+
+    /**
+     * Query de base : produits en stock + filtre catégorie optionnel.
+     */
+    private function filteredProductsQuery($categoryId = null)
+    {
+        $query = Produit::with('categorie')->where('stock', '>', 0);
+
+        if (!empty($categoryId)) {
+            $query->where('category_id', $categoryId);
+        }
+
+        return $query;
+    }
+
+    /**
+     * ⚡ AJAX : Filtrer par catégorie sans recharger la page (Home "Filtrer par").
+     * Retourne le HTML de la grille (8 produits max) + le total.
+     */
+    public function filterAjax(Request $request)
+    {
+        $categoryId = $request->query('category');
+
+        $produits = $this->filteredProductsQuery($categoryId)
+            ->latest()
+            ->take(self::HOME_PRODUCTS_LIMIT)
+            ->get();
+
+        $total = $this->filteredProductsQuery($categoryId)->count();
+
+        return response()->json([
+            'html'  => view('products._cards', compact('produits'))->render(),
+            'total' => $total,
+            'shown' => $produits->count(),
+        ]);
+    }
+
+    /**
+     * 🛒 BOUTIQUE : page dédiée type e-commerce.
+     * Recherche libre (nom/description), filtre catégorie, tri, fourchette de prix, pagination.
+     */
+    public function boutique(Request $request)
+    {
+        $categories = Category::all();
+
+        $query = Produit::with('categorie')->where('stock', '>', 0);
+
+        // 🔎 Recherche libre : nom OU description OU nom de catégorie
+        if ($request->filled('q')) {
+            $search = $request->q;
+            $query->where(function ($qb) use ($search) {
+                $qb->where('nom', 'LIKE', "%{$search}%")
+                    ->orWhere('description', 'LIKE', "%{$search}%")
+                    ->orWhereHas('categorie', function ($c) use ($search) {
+                        $c->where('nom', 'LIKE', "%{$search}%");
+                    });
+            });
+        }
+
+        // 🏷️ Filtre catégorie
+        if ($request->filled('category')) {
+            $query->where('category_id', $request->category);
+        }
+
+        // 💰 Fourchette de prix
+        if ($request->filled('prix_min')) {
+            $query->where('prix', '>=', (float) $request->prix_min);
+        }
+        if ($request->filled('prix_max')) {
+            $query->where('prix', '<=', (float) $request->prix_max);
+        }
+
+        // ↕️ Tri
+        switch ($request->get('sort')) {
+            case 'prix_asc':
+                $query->orderBy('prix', 'asc');
+                break;
+            case 'prix_desc':
+                $query->orderBy('prix', 'desc');
+                break;
+            case 'nom':
+                $query->orderBy('nom', 'asc');
+                break;
+            default:
+                $query->latest();
+                break;
+        }
+
+        $produits = $query->paginate(12)->withQueryString();
+
+        return view('boutique', compact('produits', 'categories'));
     }
     /**
      * Live Search via AJAX for Home Page

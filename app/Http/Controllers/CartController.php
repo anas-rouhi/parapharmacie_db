@@ -46,7 +46,13 @@ class CartController extends Controller
 
     public function applyCoupon(Request $request)
     {
-        $coupon = Coupon::where('code', strtoupper(trim($request->coupon_code)))
+        $code = strtoupper(trim((string) $request->input('coupon_code')));
+
+        if ($code === '') {
+            return back()->with('error', 'Veuillez saisir un code promo.');
+        }
+
+        $coupon = Coupon::where('code', $code)
             ->where('is_active', true)
             ->first();
 
