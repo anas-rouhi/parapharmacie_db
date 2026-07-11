@@ -110,3 +110,68 @@
         </div>
     </div>
 </nav>
+
+{{-- 🔎 Recherche instantanée (dropdown de suggestions) — active sur TOUTES les pages --}}
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const searchInput = document.getElementById('live-search-input');
+        const resultsDropdown = document.getElementById('search-results-dropdown');
+        if (!searchInput || !resultsDropdown) return;
+
+        let debounce;
+        searchInput.addEventListener('input', function () {
+            const query = this.value.trim();
+            clearTimeout(debounce);
+
+            if (query.length < 2) {
+                resultsDropdown.innerHTML = '';
+                resultsDropdown.classList.add('hidden');
+                return;
+            }
+
+            debounce = setTimeout(() => {
+                fetch(`{{ route('products.liveSearch') }}?q=${encodeURIComponent(query)}`, {
+                    headers: { 'X-Requested-With': 'XMLHttpRequest' }
+                })
+                .then(r => r.json())
+                .then(products => {
+                    resultsDropdown.innerHTML = '';
+
+                    if (!products || products.length === 0) {
+                        resultsDropdown.innerHTML = `<div class="p-4 text-center text-sm text-slate-400 font-medium">Aucun produit trouvé</div>`;
+                        resultsDropdown.classList.remove('hidden');
+                        return;
+                    }
+
+                    products.forEach(product => {
+                        const imageSrc = product.image ? `/images/products/${product.image}` : '/images/default-product.png';
+                        const item = document.createElement('a');
+                        item.href = `/product/${product.id}`;
+                        item.className = 'flex items-center gap-4 p-3 hover:bg-slate-50 transition duration-150 group';
+                        item.innerHTML = `
+                            <div class="w-12 h-12 rounded-xl bg-slate-100 overflow-hidden flex-shrink-0 border border-slate-100">
+                                <img src="${imageSrc}" alt="${product.nom}" class="w-full h-full object-cover group-hover:scale-105 transition duration-200">
+                            </div>
+                            <div class="flex-1 min-w-0">
+                                <h4 class="text-sm font-semibold text-slate-800 truncate group-hover:text-emerald-600 transition">${product.nom}</h4>
+                                <p class="text-xs font-bold text-emerald-600 mt-0.5">${product.prix} DH</p>
+                            </div>
+                            <svg class="w-4 h-4 text-slate-300 group-hover:text-emerald-500 transition shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                        `;
+                        resultsDropdown.appendChild(item);
+                    });
+
+                    resultsDropdown.classList.remove('hidden');
+                })
+                .catch(() => resultsDropdown.classList.add('hidden'));
+            }, 200);
+        });
+
+        // Fermer le dropdown si on clique en dehors
+        document.addEventListener('click', function (e) {
+            if (!searchInput.contains(e.target) && !resultsDropdown.contains(e.target)) {
+                resultsDropdown.classList.add('hidden');
+            }
+        });
+    });
+</script>

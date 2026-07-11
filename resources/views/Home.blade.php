@@ -1048,76 +1048,7 @@
         setInterval(updateTimer, 1000);
     </script>
 
-    <script>
-            document.addEventListener('DOMContentLoaded', function() {
-        const searchInput = document.getElementById('live-search-input');
-        const resultsDropdown = document.getElementById('search-results-dropdown');
-
-        if (searchInput && resultsDropdown) {
-            searchInput.addEventListener('input', function() {
-                const query = this.value.trim();
-
-                // إذا مسح الكتابة، نخفيو الصندوق ونحبسو
-                if (query.length < 2) {
-                    resultsDropdown.innerHTML = '';
-                    resultsDropdown.classList.add('hidden');
-                    return;
-                }
-
-                // إرسال الطلب لـ Laravel عبر Fetch API
-                fetch(`/live-search?q=${encodeURIComponent(query)}`)
-                    .then(response => response.json())
-                    .then(products => {
-                        resultsDropdown.innerHTML = ''; // مسح النتائج القديمة
-
-                        if (products.length === 0) {
-                            // إذا مالقاش برودوي
-                            resultsDropdown.innerHTML = `
-                                <div class="p-4 text-center text-sm text-slate-400 font-medium">
-                                    <i class="fa-solid fa-circle-info mr-1"></i> Aucun produit trouvé
-                                </div>`;
-                            resultsDropdown.classList.remove('hidden');
-                            return;
-                        }
-
-                        // عرض المنتجات اللي لقانا السيستم
-                        products.forEach(product => {
-                            // تحديد مسار الصورة الافتراضية أو الصورة من الداتابيز
-                            const imageSrc = product.image ? `/images/products/${product.image}` : '/images/default-product.png';
-                            
-                            const productItem = document.createElement('a');
-                            productItem.href = `/product/${product.id}`;
-                            productItem.className = 'flex items-center gap-4 p-3 hover:bg-slate-50 transition duration-150 group';
-                            
-                            productItem.innerHTML = `
-                                <div class="w-12 h-12 rounded-xl bg-slate-100 overflow-hidden flex-shrink-0 border border-slate-100">
-                                    <img src="${imageSrc}" alt="${product.nom}" class="w-full h-full object-cover group-hover:scale-105 transition duration-200">
-                                </div>
-                                <div class="flex-1 min-w-0">
-                                    <h4 class="text-sm font-semibold text-slate-800 truncate group-hover:text-indigo-600 transition">${product.nom}</h4>
-                                    <p class="text-xs font-bold text-indigo-600 mt-0.5">${product.prix} DH</p>
-                                </div>
-                                <div class="text-slate-300 group-hover:text-indigo-500 pr-2 transition">
-                                    <i class="fa-solid fa-chevron-right text-xs"></i>
-                                </div>
-                            `;
-                            resultsDropdown.appendChild(productItem);
-                        });
-
-                        resultsDropdown.classList.remove('hidden');
-                    })
-                    .catch(error => console.error('Error fetching search results:', error));
-            });
-
-            // إخفاء الصندوق إلا كليكا المستعمل ف أي بلاصة خرى ف الشاشة
-            document.addEventListener('click', function(e) {
-                if (!searchInput.contains(e.target) && !resultsDropdown.contains(e.target)) {
-                    resultsDropdown.classList.add('hidden');
-                }
-            });
-        }
-    });
-    </script>
+    {{-- La recherche instantanée est désormais gérée par le composant <x-site-header /> (active sur toutes les pages) --}}
 
     <script>
         // فتح وإغلاق المودال
