@@ -1,72 +1,87 @@
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
-</head>
-<body class="bg-gray-50 font-[Inter] flex">
+@extends('layouts.admin')
 
-    <aside class="w-64 min-h-screen bg-gray-900 text-white p-6 hidden md:block">
-        <h1 class="text-2xl font-bold text-green-500 mb-10 text-center uppercase tracking-widest">ParaAdmin</h1>
-        <nav class="space-y-4">
-            <a href="{{ route('admin.dashboard') }}" class="block py-2.5 px-4 rounded text-gray-400 hover:bg-gray-800 transition">Tableau de bord</a>
-            <a href="{{ route('admin.produits') }}" class="block py-2.5 px-4 rounded text-gray-400 hover:bg-gray-800 transition">Mes Produits</a>
-            <a href="{{ route('admin.commandes') }}" class="block py-2.5 px-4 rounded bg-green-600 text-white font-medium">Commandes</a>
-            <a href="#" class="block py-2.5 px-4 rounded text-gray-400 hover:bg-gray-800 transition">Profil</a>
-        </nav>
-    </aside>
+@section('title', 'ParaAdmin | Suivi des Commandes')
 
-    <main class="flex-1 p-10">
-        <header class="flex justify-between items-center mb-10">
-            <h2 class="text-3xl font-bold text-gray-800 tracking-tight">Gestion des Commandes</h2>
-        </header>
+@section('content')
+    <div class="flex justify-between items-center mb-10">
+        <div class="flex items-center gap-3">
+            <h2 class="text-3xl font-black text-gray-800 tracking-tight">Suivi des Commandes</h2>
+            <span class="bg-blue-50 text-blue-700 text-xs font-black px-3 py-1 rounded-full uppercase tracking-wider border border-blue-100">Ventes</span>
+        </div>
+    </div>
 
-        <div class="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden">
-            <table class="w-full text-left">
-                <thead class="bg-gray-50 border-b border-gray-100">
+    @if(session('success'))
+        <div class="bg-green-500 text-white p-4 rounded-xl mb-6 font-semibold shadow-md">
+            ✅ {{ session('success') }}
+        </div>
+    @endif
+
+    <div class="bg-white rounded-3xl shadow-sm border border-gray-200/60 overflow-hidden">
+        <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse">
+                <thead class="bg-gray-50/80 border-b border-gray-100">
                     <tr>
-                        <th class="p-5 text-xs uppercase tracking-wider font-bold text-gray-500">Réf</th>
-                        <th class="p-5 text-xs uppercase tracking-wider font-bold text-gray-500">Client</th>
-                        <th class="p-5 text-xs uppercase tracking-wider font-bold text-gray-500">Produit</th>
-                        <th class="p-5 text-xs uppercase tracking-wider font-bold text-gray-500">Total</th>
-                        <th class="p-5 text-xs uppercase tracking-wider font-bold text-gray-500">Statut</th>
-                        <th class="p-5 text-xs uppercase tracking-wider font-bold text-gray-500 text-right">Action</th>
+                        <th class="p-5 text-xs font-bold text-gray-400 uppercase tracking-wider">Réf</th>
+                        <th class="p-5 text-xs font-bold text-gray-400 uppercase tracking-wider">Client</th>
+                        <th class="p-5 text-xs font-bold text-gray-400 uppercase tracking-wider">Téléphone</th>
+                        <th class="p-5 text-xs font-bold text-gray-400 uppercase tracking-wider">Adresse</th>
+                        <th class="p-5 text-xs font-bold text-gray-400 uppercase tracking-wider">Total</th>
+                        <th class="p-5 text-xs font-bold text-gray-400 uppercase tracking-wider text-center" style="width: 280px;">Statut</th>
+                        <th class="p-5 text-xs font-bold text-gray-400 uppercase tracking-wider text-center">Action</th>
                     </tr>
                 </thead>
-                <tbody class="divide-y divide-gray-50">
+                <tbody class="divide-y divide-gray-100">
                     @forelse($commandes as $cmd)
-                    <tr class="hover:bg-gray-50 transition">
-                        <td class="p-5 font-mono text-sm text-indigo-600">#{{ $cmd->id }}</td>
-                        <td class="p-5 font-semibold text-gray-800">{{ $cmd->user->name ?? 'Client' }}</td>
-                        <td class="p-5 text-gray-600">{{ $cmd->items->count() }} produit(s)</td>
-                        <td class="p-5 font-bold text-gray-900">{{ number_format($cmd->total, 2) }} DH</td>
-                        <td class="p-5">
-                            <span class="px-3 py-1 rounded-lg text-xs font-black uppercase {{ $cmd->status == 'valide' ? 'bg-green-100 text-green-600' : 'bg-orange-100 text-orange-600' }}">
-                                {{ $cmd->status }}
-                            </span>
-                        </td>
-                        
-                        <td class="p-5 text-right">
-                            @if($cmd->status == 'en_attente')
-                                <form action="{{ route('admin.admin.commandes.valider', $cmd->id) }}" method="POST">
-                                    @csrf
-                                    <button type="submit" class="bg-green-600 text-white px-4 py-2 rounded-xl text-xs font-bold hover:bg-green-700 transition">
-                                        Valider
+                        <tr class="hover:bg-gray-50/40 transition">
+                            <td class="p-5 font-mono text-sm text-green-600 font-bold">#{{ $cmd->id }}</td>
+                            <td class="p-5">
+                                <div class="font-bold text-gray-800 text-sm">{{ $cmd->nom_complet }}</div>
+                                <span class="inline-block text-[9px] font-black px-1.5 py-0.5 rounded uppercase mt-1 {{ $cmd->user_id ? 'bg-green-50 text-green-700' : 'bg-gray-100 text-gray-500' }}">
+                                    {{ $cmd->user_id ? 'Membre' : 'Invité' }}
+                                </span>
+                            </td>
+                            <td class="p-5 text-gray-600 font-semibold text-sm">{{ $cmd->telephone }}</td>
+                            <td class="p-5 text-gray-500 text-sm max-w-xs truncate" title="{{ $cmd->adresse }}">{{ $cmd->adresse }}</td>
+                            <td class="p-5 font-black text-gray-900 text-sm">{{ number_format($cmd->total, 2) }} DH</td>
+                            
+                            <td class="p-5">
+                                @php
+                                    $progress = ['en_attente' => 15, 'valide' => 55, 'livre' => 100, 'annule' => 100];
+                                    $p = $progress[$cmd->status] ?? 15;
+                                    $barColor = $cmd->status == 'en_attente' ? 'bg-orange-400' : ($cmd->status == 'annule' ? 'bg-red-500' : 'bg-green-500');
+                                @endphp
+                                <div class="flex flex-col gap-2 mx-auto" style="max-w: 240px;">
+                                    <div class="w-full bg-gray-100 rounded-full h-2 overflow-hidden">
+                                        <div class="{{ $barColor }} h-2 rounded-full transition-all duration-500" style="width: {{ $p }}%"></div>
+                                    </div>
+                                    <div class="flex justify-between items-center px-1 gap-1">
+                                        @foreach(['en_attente' => 'ATTENTE', 'valide' => 'VALIDÉ', 'livre' => 'LIVRÉ', 'annule' => 'X'] as $statusKey => $statusLabel)
+                                            <form action="{{ route('admin.commandes.update', $cmd->id) }}" method="POST" class="inline">
+                                                @csrf @method('PUT')
+                                                <input type="hidden" name="status" value="{{ $statusKey }}">
+                                                <button type="submit" class="text-[10px] font-extrabold tracking-wider transition duration-150 {{ $cmd->status == $statusKey ? 'text-green-600 font-black scale-105' : 'text-gray-400 hover:text-gray-600' }}">{{ $statusLabel }}</button>
+                                            </form>
+                                        @endforeach
+                                    </div>
+                                </div>
+                            </td>
+                            
+                            <td class="p-5 text-center">
+                                <form action="{{ route('admin.commandes.delete', $cmd->id) }}" method="POST" onsubmit="return confirm('Voulez-vous vraiment supprimer cette commande ?');">
+                                    @csrf @method('DELETE')
+                                    <button type="submit" class="text-red-500 hover:text-white bg-red-50 hover:bg-red-500 p-2 rounded-xl transition duration-250">
+                                        🗑️
                                     </button>
                                 </form>
-                            @else
-                                <span class="text-gray-400 text-xs font-bold">Validée</span>
-                            @endif
-                        </td>
-                    </tr>
+                            </td>
+                        </tr>
                     @empty
-                    <tr>
-                        <td colspan="6" class="p-10 text-center text-gray-400">Aucune commande trouvée.</td>
-                    </tr>
+                        <tr>
+                            <td colspan="7" class="p-10 text-center text-gray-400 italic">Aucune commande trouvée.</td>
+                        </tr>
                     @endforelse
                 </tbody>
             </table>
         </div>
-    </main>
-</body>
-</html>
+    </div>
+@endsection

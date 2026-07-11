@@ -36,5 +36,6 @@
             <a href="{{ route('admin.produits') }}">Gestion Produits</a>
             <a href="{{ route('admin.commandes') }}">Gestion Commandes</a>
         @endif
+        @include('components.chatbot')
     </body>
 </html>

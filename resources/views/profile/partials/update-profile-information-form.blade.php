@@ -5,7 +5,7 @@
         </h2>
 
         <p class="mt-1 text-sm text-gray-600">
-            {{ __("Update your account's profile information and email address.") }}
+            {{ __("Update your account's profile information, email address and phone number.") }}
         </p>
     </header>
 
@@ -45,6 +45,12 @@
                     @endif
                 </div>
             @endif
+        </div>
+
+        <div>
+            <x-input-label for="telephone" :value="__('Téléphone')" />
+            <x-text-input id="telephone" name="telephone" type="text" class="mt-1 block w-full" :value="old('telephone', $user->telephone)" required placeholder="Ex: 0612345678" />
+            <x-input-error class="mt-2" :messages="$errors->get('telephone')" />
         </div>
 
         <div class="flex items-center gap-4">

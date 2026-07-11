@@ -9,33 +9,16 @@ use Illuminate\Support\Facades\Auth;
 
 class AdminMiddleware
 {
+    /**
+     * Handle an incoming request.
+     */
     public function handle(Request $request, Closure $next): Response
     {
-
-    
-// -----------------------------
-        // 1. Check wach l-user m-connecti
-        if (!Auth::check()) {
-            return redirect('/login');
+        // إيلا مكانش مسجل أولا كان الدور ديالو ماشي admin، كيبلوكا وكيطلع ليه خطأ 403
+        if (!Auth::check() || Auth::user()->role !== 'admin') {
+            abort(403, 'Accès interdit. Réservé à l\'administrateur.');
         }
 
-        // 2. ILA KAN ADMIN - Daz (Dkhel l-dashboard)
-        if (Auth::user()->role === 'admin') {
-            return $next($request);
-        }
-
-        // 3. ILA KAN CLIENT - "RETURN" Hwa l-ghalta li kanet 3ndek
-        // Darori t-koun "return" bach i-hbess l-request o i-redirect-i
-        return redirect()->route('dashboard')->with('error', 'Ma-3ndekch l-haqq t-dkhel hna!');
-
-// ------------------------        
-        // test==>wach kayfre9 bin lclient oadmin 
-
-        // dd(Auth::user()->role);
-
-        // if (Auth::user()->role === 'admin') {
-        //     return $next($request);
-        // }
-        // return redirect('/dashboard');
+        return $next($request);
     }
 }

@@ -20,6 +20,7 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'telephone',
         'role', // Darori t-kon hna
     ];
 
@@ -44,5 +45,10 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+    public function orders()
+    {
+        return $this->hasMany(Order::class, 'user_id');
+        // تأكد بلي الكلاس سميتو Order، يلا كنتي مسميه شي حاجة أخرى بدلو هنا
     }
 }

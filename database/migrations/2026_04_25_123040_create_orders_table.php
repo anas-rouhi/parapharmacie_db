@@ -9,13 +9,20 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
-    public function up(): void
+    public function up()
     {
+        
         Schema::create('orders', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained()->onDelete('cascade');
-            $table->decimal('prix', 10, 2); // Dakchi li bghina n-sum-iw
-            $table->string('status')->default('en_attente'); // en_attente, valide, livree
+
+            // user_id i-koun nullable (OUI) bach i-qbel l-visiteur
+            $table->foreignId('user_id')->nullable()->constrained()->onDelete('cascade');
+
+            $table->string('nom_complet');
+            $table->string('telephone');
+            $table->text('adresse');
+            $table->decimal('total', 10, 2);
+            $table->string('status')->default('en_attente');
             $table->timestamps();
         });
     }
