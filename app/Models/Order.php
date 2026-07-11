@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class Order extends Model
 {
     // Hna k-n-q-o-l-o l-Laravel l-colonnes li n-q-d-r-o n-b-d-l-o
-    protected $fillable = ['user_id', 'nom_complet', 'telephone', 'adresse', 'total', 'status'];    public function user()
+    protected $fillable = ['user_id', 'nom_complet', 'telephone', 'adresse', 'total', 'status', 'coupon_code', 'coupon_type', 'coupon_value', 'discount_amount'];    public function user()
     {
         return $this->belongsTo(User::class);
     }

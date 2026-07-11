@@ -188,7 +188,11 @@ class CartController extends Controller
         }
 
         $valeurRemise = 0;
+        $couponCode = null;
+        $couponType = null;
+        $couponValeurRaw = null;
         if (session()->has('coupon')) {
+            $couponCode = session()->get('coupon.code');
             $couponType = session()->get('coupon.type', 'pourcentage');
             $couponValeurRaw = session()->get('coupon.valeur', 0);
 
@@ -196,6 +200,11 @@ class CartController extends Controller
                 $valeurRemise = $totalGeneral * ($couponValeurRaw / 100);
             } else {
                 $valeurRemise = $couponValeurRaw;
+            }
+
+            // ماتخليش الريميز تكبر من الطوطال
+            if ($valeurRemise > $totalGeneral) {
+                $valeurRemise = $totalGeneral;
             }
         }
 
@@ -206,12 +215,16 @@ class CartController extends Controller
 
         try {
             $commande = Order::create([
-                'user_id'     => auth()->check() ? auth()->id() : null,
-                'nom_complet' => $request->nom_complet,
-                'telephone'   => $request->telephone,
-                'adresse'     => $request->adresse,
-                'total'       => $totalFinal,
-                'status'      => 'en_attente',
+                'user_id'         => auth()->check() ? auth()->id() : null,
+                'nom_complet'     => $request->nom_complet,
+                'telephone'       => $request->telephone,
+                'adresse'         => $request->adresse,
+                'total'           => $totalFinal,
+                'status'          => 'en_attente',
+                'coupon_code'     => $couponCode,
+                'coupon_type'     => $couponType,
+                'coupon_value'    => $couponValeurRaw,
+                'discount_amount' => $valeurRemise,
             ]);
 
             foreach ($panier as $cartKey => $details) {

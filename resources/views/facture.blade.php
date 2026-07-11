@@ -288,15 +288,33 @@
                     </div>
                 </td>
                 <td class="summary-box">
+                    @php
+                        $remise = $commande->discount_amount ?? 0;
+                        $sousTotal = $commande->total + $remise; // الطوطال قبل الريميز
+                    @endphp
                     <table class="summary-row">
                         <tr>
-                            <td>Sous-Total (HT) :</td>
-                            <td class="text-right">{{ number_format($commande->total * 0.8, 2) }} DH</td>
+                            <td>Sous-Total :</td>
+                            <td class="text-right">{{ number_format($sousTotal, 2) }} DH</td>
                         </tr>
-                        <tr>
-                            <td>TVA (20%) :</td>
-                            <td class="text-right">{{ number_format($commande->total * 0.2, 2) }} DH</td>
-                        </tr>
+
+                        @if($commande->coupon_code)
+                            <tr>
+                                <td style="color: #059669;">
+                                    Code Promo :
+                                    <strong>{{ $commande->coupon_code }}</strong>
+                                    @if($commande->coupon_type === 'pourcentage')
+                                        ({{ (float) $commande->coupon_value }}%)
+                                    @else
+                                        ({{ number_format($commande->coupon_value, 2) }} DH)
+                                    @endif
+                                </td>
+                                <td class="text-right" style="color: #059669; font-weight: 700;">
+                                    - {{ number_format($remise, 2) }} DH
+                                </td>
+                            </tr>
+                        @endif
+
                         <tr>
                             <td>Frais de port :</td>
                             <td class="text-right" style="color: #10b981; font-weight: 600;">Gratuit</td>
