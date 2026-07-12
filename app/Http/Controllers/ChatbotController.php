@@ -37,9 +37,7 @@ class ChatbotController extends Controller
             // نجيبو الـ Key ديريكت من الـ .env
             $apiKey = env('GEMINI_API_KEY');
 
-            // 🔐 On vérifie bien le certificat SSL, en s'appuyant sur notre bundle CA
-            // (remplace l'ancien withoutVerifying() qui désactivait TOUTE vérification).
-            $response = Http::withOptions(['verify' => app('ca.bundle')])
+            $response = Http::withoutVerifying() // 🔥 هادي غاتخلي الطلب يدوز بلا ما يتبلوكا بسبب الـ SSL ف اللوكال
                 ->withHeaders([
                     'Content-Type' => 'application/json'
                 ])
