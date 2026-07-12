@@ -44,8 +44,10 @@ class AdminController extends Controller
             ])
             ->sum('total');
 
-        $produits = Produit::all();
-        $categories = Category::all();
+        // ⚡ Compteur d'offres flash actives (le détail est sur sa page dédiée : admin.flash.index)
+        $offresActivesCount = Produit::where('is_flash_sale', 1)
+            ->where('flash_sale_end', '>', now())
+            ->count();
 
         /**
          * 📊 حساب الأرباح الصافية (Bénéfice Net) بناءً على الفترة المحددة
@@ -55,35 +57,37 @@ class AdminController extends Controller
         /**
          * 📈 تجهيز بيانات المبيانات (Chart.js) للأشهر الـ 6 الأخيرة للطلبيات المقبولة فقط
          */
+        // 🐛 Correction : on groupe par ANNÉE-MOIS (et non par '%b' seul, qui fusionnait
+        // le même mois de deux années différentes et cassait l'ordre au passage d'année).
         $salesData = Order::select(
             DB::raw('SUM(total) as total_sales'),
-            DB::raw("DATE_FORMAT(created_at, '%b') as month")
+            DB::raw("DATE_FORMAT(created_at, '%Y-%m') as ym")
         )
             ->whereIn('status', ['valide', 'livre'])
-            ->where('created_at', '>=', now()->subMonths(6))
-            ->groupBy(DB::raw("DATE_FORMAT(created_at, '%b')"), DB::raw("MONTH(created_at)"))
-            ->orderBy(DB::raw("MONTH(created_at)"), 'asc')
-            ->get();
+            ->where('created_at', '>=', now()->subMonths(5)->startOfMonth())
+            ->groupBy('ym')
+            ->orderBy('ym', 'asc')
+            ->pluck('total_sales', 'ym');
 
+        // On construit une série complète de 6 mois : les mois sans vente valent 0
+        // (plus de données inventées quand la base est vide).
         $chartLabels = [];
         $chartSales = [];
         $chartProfits = [];
 
-        foreach ($salesData as $data) {
-            $chartLabels[] = $data->month;
-            $chartSales[] = (float)$data->total_sales;
-            $chartProfits[] = (float)($data->total_sales * 0.30);
-        }
+        Carbon::setLocale('fr');
 
-        // إيلا كانت الداتابيز خاوية من المبيعات الحقيقية، كنعمروا بيانات تجريبية باش المبيان يجي عامر
-        if (empty($chartLabels)) {
-            $chartLabels = ['Jan', 'Feb', 'Mar', 'Apr', 'Maj', 'Jun'];
-            $chartSales = [4200, 5800, 7100, 6400, 8900, $totalRevenu > 0 ? $totalRevenu : 12000];
-            $chartProfits = [1260, 1740, 2130, 1920, 2670, $totalBenefice > 0 ? $totalBenefice : 3600];
+        for ($i = 5; $i >= 0; $i--) {
+            $mois = Carbon::now()->subMonths($i);
+            $cle = $mois->format('Y-m');
+            $ventes = (float) ($salesData[$cle] ?? 0);
+
+            $chartLabels[] = ucfirst($mois->translatedFormat('M Y'));
+            $chartSales[] = round($ventes, 2);
+            $chartProfits[] = round($ventes * 0.30, 2);
         }
 
         return view('admin.dashboard', compact(
-            'produits',
             'totalProduits',
             'totalCategories',
             'stockLimite',
@@ -91,7 +95,7 @@ class AdminController extends Controller
             'totalCommandes',
             'totalRevenu',
             'totalBenefice',
-            'categories',
+            'offresActivesCount',
             'chartLabels',
             'chartSales',
             'chartProfits',
@@ -99,24 +103,104 @@ class AdminController extends Controller
             'dateFin'
         ));
     }
+
+    /**
+     * ⚡ Page dédiée : Offres Flash & Packs (liste + configuration)
+     */
+    public function flashOffers(Request $request)
+    {
+        $query = Produit::where('is_flash_sale', 1)
+            ->select('id', 'nom', 'prix', 'prix_flash', 'flash_sale_end', 'pack_products', 'image');
+
+        // 🔎 Recherche par nom
+        if ($request->filled('q')) {
+            $query->where('nom', 'LIKE', '%' . $request->q . '%');
+        }
+
+        // 🏷️ Filtre par état
+        if ($request->etat === 'active') {
+            $query->where('flash_sale_end', '>', now());
+        } elseif ($request->etat === 'expiree') {
+            $query->where(function ($sub) {
+                $sub->where('flash_sale_end', '<=', now())
+                    ->orWhereNull('flash_sale_end');
+            });
+        }
+
+        $offresFlash = $query->orderByDesc('flash_sale_end')
+            ->paginate(10)
+            ->withQueryString();
+
+        // Statistiques
+        $totalOffres    = Produit::where('is_flash_sale', 1)->count();
+        $offresActives  = Produit::where('is_flash_sale', 1)->where('flash_sale_end', '>', now())->count();
+        $offresExpirees = $totalOffres - $offresActives;
+
+        // (Le formulaire est désormais sur sa page dédiée : admin.flash.create)
+        return view('admin.flash.index', compact(
+            'offresFlash',
+            'totalOffres',
+            'offresActives',
+            'offresExpirees'
+        ));
+    }
+
+    /**
+     * ⚡ Page dédiée : formulaire de création / modification d'une offre flash.
+     * ?product_id=X → mode "Modifier" (pré-remplit le produit et ses items de pack).
+     */
+    public function flashCreate(Request $request)
+    {
+        $produits = Produit::select('id', 'nom', 'prix', 'is_flash_sale', 'prix_flash', 'flash_sale_end')
+            ->orderBy('nom')
+            ->get();
+
+        $selectedId = $request->query('product_id');
+
+        // Coche les produits déjà inclus dans le pack de l'offre en cours de modification
+        $packItems = [];
+        if ($selectedId) {
+            $offre = Produit::select('pack_products')->find($selectedId);
+            $packItems = $offre ? (json_decode($offre->pack_products ?? '[]', true) ?: []) : [];
+        }
+
+        return view('admin.flash.create', compact('produits', 'selectedId', 'packItems'));
+    }
     
 
     /**
      * عرض صفحة المستخدمين (الموظفين والزوار)
      */
-    public function usersIndex()
+    public function usersIndex(Request $request)
     {
+        $recherche = $request->input('q');
+
+        // 🔎 Filtre de recherche appliqué aux deux listes (nom ou email)
+        $filtre = function ($query) use ($recherche) {
+            if (!empty($recherche)) {
+                $query->where(function ($sub) use ($recherche) {
+                    $sub->where('name', 'LIKE', "%{$recherche}%")
+                        ->orWhere('email', 'LIKE', "%{$recherche}%");
+                });
+            }
+        };
+
+        // Deux paginateurs sur la même page → noms de page distincts
         $staff_members = User::where('role', 'client')
             ->where('id', '!=', auth()->id())
+            ->tap($filtre)
             ->latest()
-            ->get();
+            ->paginate(10, ['*'], 'staff_page')
+            ->withQueryString();
 
         $visiteurs_acheteurs = User::where('role', 'visiteur')
             ->withCount('orders')
+            ->tap($filtre)
             ->latest()
-            ->get();
+            ->paginate(10, ['*'], 'clients_page')
+            ->withQueryString();
 
-        return view('admin.users.index', compact('staff_members', 'visiteurs_acheteurs'));
+        return view('admin.users.index', compact('staff_members', 'visiteurs_acheteurs', 'recherche'));
     }
 
     /**

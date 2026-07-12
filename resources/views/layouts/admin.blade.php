@@ -13,8 +13,14 @@
     <aside class="w-64 bg-white text-gray-800 p-6 hidden md:flex flex-col justify-between flex-shrink-0 border-r border-green-100 shadow-sm h-screen sticky top-0">
     
     <div>
-        <h1 class="text-2xl font-black text-green-600 mb-10 text-center uppercase tracking-widest">ParaAdmin</h1>
-        
+        {{-- Logo identique au site public --}}
+        <a href="{{ route('admin.dashboard') }}" class="flex items-center justify-center gap-2.5 mb-10 group">
+            <span class="h-10 w-10 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center text-lg shadow-lg shadow-emerald-600/25 group-hover:scale-105 transition duration-300">🌱</span>
+            <span class="text-xl font-black tracking-tight leading-none">
+                <span class="text-slate-900">PARA</span><span class="text-emerald-600">ADMIN</span>
+            </span>
+        </a>
+
         <nav class="space-y-1.5">
             <a href="{{ route('admin.dashboard') }}" 
                class="block py-3 px-4 rounded-xl font-semibold transition duration-200 {{ request()->routeIs('admin.dashboard') ? 'bg-green-600 text-white font-bold shadow-md shadow-green-100' : 'text-gray-600 hover:bg-green-50 hover:text-green-700' }}">
@@ -31,8 +37,13 @@
                 🛍️ Commandes
             </a>
             
+            <a href="{{ route('admin.flash.index') }}"
+               class="block py-3 px-4 rounded-xl font-semibold transition duration-200 {{ request()->routeIs('admin.flash*') ? 'bg-green-600 text-white font-bold shadow-md shadow-green-100' : 'text-gray-600 hover:bg-green-50 hover:text-green-700' }}">
+                ⚡ Offres Flash
+            </a>
+
             <!-- 🎟️ البارتي الجديدة د الـ Coupons زدناها هنا -->
-            <a href="{{ route('admin.coupons.index') }}" 
+            <a href="{{ route('admin.coupons.index') }}"
                class="block py-3 px-4 rounded-xl font-semibold transition duration-200 {{ request()->routeIs('admin.coupons*') ? 'bg-green-600 text-white font-bold shadow-md shadow-green-100' : 'text-gray-600 hover:bg-green-50 hover:text-green-700' }}">
                 🎟️ Codes Promo
             </a>
@@ -57,7 +68,11 @@
     </div>
 
     <div class="pt-4 border-t border-gray-100 bg-white">
-        <form action="{{ route('logout') }}" method="POST" onsubmit="return confirm('Voulez-vous vraiment vous déconnecter ?');">
+        <form action="{{ route('logout') }}" method="POST"
+              data-confirm="Vous allez être déconnecté de l'espace administration."
+              data-confirm-title="Se déconnecter ?"
+              data-confirm-btn="Oui, me déconnecter"
+              data-confirm-icon="question">
             @csrf
             <button type="submit" class="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-red-50 text-red-600 hover:bg-red-600 hover:text-white font-bold transition duration-200 shadow-sm cursor-pointer text-sm">
                 🚪 Déconnexion
@@ -99,6 +114,21 @@
         <main class="p-6 md:p-10 flex-1 overflow-y-auto">
             @yield('content')
         </main>
+
+        {{-- Pied de page admin --}}
+        <footer class="border-t border-gray-100 bg-white px-6 md:px-10 py-5 mt-auto">
+            <div class="flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
+                <div class="flex items-center gap-2 text-gray-400 font-semibold">
+                    <span class="h-6 w-6 rounded-lg bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center text-[10px]">🌱</span>
+                    <span>&copy; {{ date('Y') }} <b class="text-gray-600">ParaSante</b> — Espace Administration</span>
+                </div>
+                <div class="flex items-center gap-4 text-gray-400 font-semibold">
+                    <a href="{{ route('home') }}" target="_blank" class="hover:text-emerald-600 transition">↗ Voir le site</a>
+                    <span class="text-gray-200">|</span>
+                    <span>Connecté : <b class="text-gray-600">{{ Auth::user()->name ?? '—' }}</b></span>
+                </div>
+            </div>
+        </footer>
     </div>
 
     <!-- Modal Modification Mot de passe -->
@@ -135,6 +165,8 @@
             </form>
         </div>
     </div>
+
+    @include('partials.confirm-dialog')
 
     <script>
         function openPasswordModal() {

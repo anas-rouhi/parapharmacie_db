@@ -174,10 +174,46 @@ class ProductController extends Controller
     /**
      * 2. LISTE DES PRODUITS (DASHBOARD ADMIN)
      */
-    public function list()
+    /**
+     * Page dédiée : formulaire d'ajout d'un produit.
+     */
+    public function create()
     {
-        $produits = Produit::with('categorie')->latest()->get();
-        return view('admin.produits', compact('produits'));
+        $categories = Category::all();
+        return view('admin.produits-create', compact('categories'));
+    }
+
+    public function list(Request $request)
+    {
+        $query = Produit::with('categorie');
+
+        // 🔎 Recherche par nom / description
+        if ($request->filled('q')) {
+            $q = $request->q;
+            $query->where(function ($sub) use ($q) {
+                $sub->where('nom', 'LIKE', "%{$q}%")
+                    ->orWhere('description', 'LIKE', "%{$q}%");
+            });
+        }
+
+        // 🏷️ Filtre par catégorie
+        if ($request->filled('category')) {
+            $query->where('category_id', $request->category);
+        }
+
+        // 📦 Filtre par état du stock
+        if ($request->stock === 'rupture') {
+            $query->where('stock', '<=', 0);
+        } elseif ($request->stock === 'critique') {
+            $query->whereBetween('stock', [1, 3]);
+        } elseif ($request->stock === 'ok') {
+            $query->where('stock', '>', 3);
+        }
+
+        $produits = $query->latest()->paginate(10)->withQueryString();
+        $categories = Category::all();
+
+        return view('admin.produits', compact('produits', 'categories'));
     }
 
     /**
@@ -274,7 +310,7 @@ class ProductController extends Controller
             'flash_sale_end' => $request->flash_sale_end,
         ]);
 
-        return back()->with('success', 'Le produit a été ajouté avec succès au stock !');
+        return redirect()->route('admin.produits')->with('success', 'Le produit a été ajouté avec succès au catalogue !');
     }
 
     /**
@@ -303,21 +339,16 @@ class ProductController extends Controller
     {
         $produit = Produit::findOrFail($id);
 
-        // 1. الفاليداسيون نقية ومقادة بلا نقاط وبلا مشاكل
         $request->validate([
-            'nom'            => 'required|string',
-            'prix'           => 'required|numeric',
-            'category_id'    => 'required',
-            'is_flash_sale'  => 'nullable|boolean',
-            'prix_flash'     => 'nullable|numeric',
-            'flash_sale_end' => 'nullable',
-            'pack_items'     => 'nullable|array',
+            'nom'         => 'required|string|max:255',
+            'prix'        => 'required|numeric|min:0',
+            'prix_achat'  => 'nullable|numeric|min:0',
+            'category_id' => 'required|exists:categories,id',
+            'stock'       => 'nullable|integer|min:0',
+            'image'       => 'nullable|image',
         ]);
 
-        // 2. تحويل الـ Checkboxes لـ JSON
-        $packProductsJson = $request->has('pack_items') ? json_encode($request->pack_items) : json_encode([]);
-
-        // 3. تسيير الصورة القديمة والجديدة
+        // Gestion de l'image (on remplace l'ancienne uniquement si une nouvelle est envoyée)
         $imageName = $produit->image;
         if ($request->hasFile('image')) {
             if ($produit->image && file_exists(public_path('images/products/' . $produit->image))) {
@@ -327,24 +358,22 @@ class ProductController extends Controller
             $request->image->move(public_path('images/products'), $imageName);
         }
 
-        // 4. الحفظ النهائي ف الداتابيز
+        // 🐛 Correction importante : on ne touche PLUS aux champs Flash/Pack ici.
+        // Avant, `is_flash_sale => $request->is_flash_sale ?? 0` (absent de ce formulaire) remettait
+        // la valeur à 0 et vidait prix_flash / flash_sale_end / pack_products :
+        // modifier un produit SUPPRIMAIT silencieusement son offre flash.
+        // Les offres se gèrent désormais sur leur page dédiée (admin.flash.index).
         $produit->update([
-            'nom'            => $request->nom,
-            'description'    => $request->description,
-            'prix'           => $request->prix,
-            'category_id'    => $request->category_id,
-            'image'          => $imageName,
-            'stock'          => $request->stock ?? 0,
-
-            // الخانات الجداد ديال الـ Flash Sale والـ Pack
-            'is_flash_sale'  => $request->is_flash_sale ?? 0,
-            'prix_flash'     => $request->prix_flash,
-            'flash_sale_end' => $request->flash_sale_end,
-            'pack_products'  => $packProductsJson,
+            'nom'         => $request->nom,
+            'description' => $request->description,
+            'prix'        => $request->prix,
+            'prix_achat'  => $request->prix_achat ?? $produit->prix_achat,
+            'category_id' => $request->category_id,
+            'image'       => $imageName,
+            'stock'       => $request->stock ?? 0,
         ]);
 
-        // 5. التوجيه لصفحة المنتجات مع رسالة النجاح
-        return redirect()->route('admin.produits')->with('success', 'Produit et Pack modifiés avec succès !');
+        return redirect()->route('admin.produits')->with('success', 'Le produit a été modifié avec succès !');
     }
 
     /**
@@ -466,6 +495,6 @@ class ProductController extends Controller
         ]);
 
         // 5. الرجوع مع ميساج ديال النجاح غايطلع ليك ف الشاشة
-        return redirect()->back()->with('success', 'Le Pack Flash Sale a été configuré avec succès !');
+        return redirect()->route('admin.flash.index')->with('success', "L'offre flash a été enregistrée avec succès !");
     }
 }

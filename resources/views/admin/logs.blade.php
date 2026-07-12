@@ -79,7 +79,7 @@
         </div>
         
         <div class="mt-6 flex justify-center">
-            {{ $logs->links() }}
+            @include('partials.admin-pagination', ['paginator' => $logs])
         </div>
     </div>
 @endsection

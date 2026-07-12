@@ -5,8 +5,20 @@
 @section('content')
     <div class="space-y-12">
         
-        <div class="flex justify-between items-center mb-6">
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
             <h2 class="text-3xl font-black text-gray-800 tracking-tight">Gestion des Comptes</h2>
+
+            {{-- 🔎 Recherche (s'applique aux deux listes) --}}
+            <form method="GET" action="{{ route('admin.users.index') }}" class="flex gap-2">
+                <input type="text" name="q" value="{{ $recherche ?? '' }}" placeholder="Nom ou email..."
+                       class="w-56 bg-white border border-gray-200 px-4 py-2.5 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500 outline-none font-semibold text-gray-700 shadow-sm">
+                <button type="submit" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm px-5 py-2.5 rounded-xl transition shadow-md shadow-emerald-600/20 cursor-pointer border-none">
+                    🔍 Filtrer
+                </button>
+                @if(!empty($recherche))
+                    <a href="{{ route('admin.users.index') }}" class="bg-gray-100 hover:bg-gray-200 text-gray-600 font-bold text-sm px-4 py-2.5 rounded-xl transition flex items-center">🔄</a>
+                @endif
+            </form>
         </div>
 
         @if(session('success'))
@@ -56,7 +68,7 @@
                                     </td>
                                     <td class="p-5 text-center flex justify-center gap-2">
                                         <button onclick="openEditModal({{ $staff->id }}, '{{ addslashes($staff->name) }}', '{{ $staff->email }}', '{{ $staff->telephone }}')" class="text-blue-600 bg-blue-50 hover:bg-blue-600 hover:text-white p-2 rounded-xl transition duration-200 font-bold text-sm">✏️ Modifier</button>
-                                        <form action="{{ route('admin.users.delete', $staff->id) }}" method="POST" class="inline" onsubmit="return confirm('Supprimer ce membre ?')">
+                                        <form action="{{ route('admin.users.delete', $staff->id) }}" method="POST" class="inline" data-confirm="Ce membre du personnel perdra son accès." data-confirm-title="Supprimer ce membre ?">
                                             @csrf @method('DELETE')
                                             <button type="submit" class="text-red-600 bg-red-50 hover:bg-red-600 hover:text-white p-2 rounded-xl transition duration-200 font-bold text-sm">🗑️ Supprimer</button>
                                         </form>
@@ -65,6 +77,10 @@
                             @endforeach
                         </tbody>
                     </table>
+                </div>
+
+                <div class="px-6 pb-6">
+                    @include('partials.admin-pagination', ['paginator' => $staff_members])
                 </div>
             </div>
         </div>
@@ -100,7 +116,7 @@
                                     </td>
                                     <td class="p-5 text-center flex justify-center gap-2">
                                         <button onclick="openEditModal({{ $client->id }}, '{{ addslashes($client->name) }}', '{{ $client->email }}', '{{ $client->telephone }}')" class="text-blue-600 bg-blue-50 hover:bg-blue-600 hover:text-white p-2 rounded-xl transition duration-200 font-bold text-sm">✏️ Modifier</button>
-                                        <form action="{{ route('admin.users.delete', $client->id) }}" method="POST" class="inline" onsubmit="return confirm('Supprimer ce client ?')">
+                                        <form action="{{ route('admin.users.delete', $client->id) }}" method="POST" class="inline" data-confirm="Ce compte client sera définitivement supprimé." data-confirm-title="Supprimer ce client ?">
                                             @csrf @method('DELETE')
                                             <button type="submit" class="text-red-600 bg-red-50 hover:bg-red-600 hover:text-white p-2 rounded-xl transition duration-200 font-bold text-sm">🗑️ Supprimer</button>
                                         </form>
@@ -113,6 +129,10 @@
                             @endforelse
                         </tbody>
                     </table>
+                </div>
+
+                <div class="px-6 pb-6">
+                    @include('partials.admin-pagination', ['paginator' => $visiteurs_acheteurs])
                 </div>
             </div>
         </div>

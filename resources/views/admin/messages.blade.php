@@ -64,7 +64,7 @@
                                         </form>
                                     @endif
                                     
-                                    <form action="{{ route('admin.messages.delete', $msg->id) }}" method="POST" class="inline" onsubmit="return confirm('Voulez-vous vraiment supprimer ce message ?')">
+                                    <form action="{{ route('admin.messages.delete', $msg->id) }}" method="POST" class="inline" data-confirm="Ce message sera définitivement supprimé." data-confirm-title="Supprimer ce message ?">
                                         @csrf @method('DELETE')
                                         <button type="submit" title="Supprimer" class="p-2 bg-red-50 hover:bg-red-100 text-red-600 rounded-xl transition border-none cursor-pointer">
                                             🗑️
@@ -85,7 +85,7 @@
         </div>
         @if($messages->hasPages())
             <div class="p-4 border-t border-gray-100">
-                {{ $messages->links() }}
+                @include('partials.admin-pagination', ['paginator' => $messages])
             </div>
         @endif
     </div>

@@ -12,9 +12,23 @@ class CouponController extends Controller
     /**
      * عرض صفحة الـ Coupons مع جلب البيانات
      */
-    public function index()
+    public function index(Request $request)
     {
-        $coupons = Coupon::latest()->get();
+        $query = Coupon::query();
+
+        // 🔎 Recherche par code
+        if ($request->filled('q')) {
+            $query->where('code', 'LIKE', '%' . strtoupper($request->q) . '%');
+        }
+
+        // 🏷️ Filtre par état
+        if ($request->etat === 'actif') {
+            $query->where('is_active', true)->whereDate('date_expiration', '>=', now());
+        } elseif ($request->etat === 'expire') {
+            $query->whereDate('date_expiration', '<', now());
+        }
+
+        $coupons = $query->latest()->paginate(10)->withQueryString();
 
         // Coupons actifs
         $couponsActifs = Coupon::where('is_active', true)

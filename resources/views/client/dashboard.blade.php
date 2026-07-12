@@ -211,7 +211,7 @@
                                                     class="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-xl transition cursor-pointer" title="Modifier">
                                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
                                             </button>
-                                            <form action="{{ route('staff.produits.destroy', $prod->id) }}" method="POST" onsubmit="return confirm('Voulez-vous vraiment supprimer ce produit de l\'inventaire ?');" class="inline">
+                                            <form action="{{ route('staff.produits.destroy', $prod->id) }}" method="POST" data-confirm="Ce produit sera définitivement retiré de l'inventaire." data-confirm-title="Supprimer ce produit ?" class="inline">
                                                 @csrf
                                                 @method('DELETE')
                                                 <button type="submit" class="p-2 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-xl transition cursor-pointer" title="Supprimer">
@@ -337,5 +337,6 @@
         }
     </script>
 
+    @include('partials.confirm-dialog')
 </body>
 </html>

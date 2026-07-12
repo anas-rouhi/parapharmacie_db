@@ -79,9 +79,35 @@ class OrderController extends Controller
     }
 
     // 1. عرض جميع الطلبيات ف لوحة التحكم
-    public function index()
+    public function index(Request $request)
     {
-        $commandes = Order::latest()->get();
+        $query = Order::query();
+
+        // 🔎 Recherche par n° de commande, nom ou téléphone
+        if ($request->filled('q')) {
+            $q = $request->q;
+            $query->where(function ($sub) use ($q) {
+                $sub->where('nom_complet', 'LIKE', "%{$q}%")
+                    ->orWhere('telephone', 'LIKE', "%{$q}%")
+                    ->orWhere('id', $q);
+            });
+        }
+
+        // 🏷️ Filtre par statut
+        if ($request->filled('status')) {
+            $query->where('status', $request->status);
+        }
+
+        // 📅 Filtre par période
+        if ($request->filled('date_debut')) {
+            $query->whereDate('created_at', '>=', $request->date_debut);
+        }
+        if ($request->filled('date_fin')) {
+            $query->whereDate('created_at', '<=', $request->date_fin);
+        }
+
+        $commandes = $query->latest()->paginate(10)->withQueryString();
+
         return view('admin.commandes', compact('commandes'));
     }
 

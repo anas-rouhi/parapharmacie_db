@@ -16,6 +16,41 @@
         </div>
     @endif
 
+    {{-- 🔎 Filtres --}}
+    <form method="GET" action="{{ route('admin.commandes') }}" class="bg-white p-4 rounded-2xl border border-gray-200/60 shadow-sm mb-6 flex flex-col md:flex-row gap-3 md:items-end">
+        <div class="flex-1">
+            <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Rechercher</label>
+            <input type="text" name="q" value="{{ request('q') }}" placeholder="N° commande, client ou téléphone..."
+                   class="w-full bg-gray-50 border border-gray-200 px-4 py-2.5 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500 outline-none font-semibold text-gray-700">
+        </div>
+        <div class="md:w-44">
+            <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Statut</label>
+            <select name="status" class="w-full bg-gray-50 border border-gray-200 px-3 py-2.5 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500 outline-none font-semibold text-gray-700">
+                <option value="">Tous</option>
+                <option value="en_attente" @selected(request('status') == 'en_attente')>En attente</option>
+                <option value="valide" @selected(request('status') == 'valide')>Validé</option>
+                <option value="livre" @selected(request('status') == 'livre')>Livré</option>
+                <option value="annule" @selected(request('status') == 'annule')>Annulé</option>
+            </select>
+        </div>
+        <div class="md:w-40">
+            <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Du</label>
+            <input type="date" name="date_debut" value="{{ request('date_debut') }}" class="w-full bg-gray-50 border border-gray-200 px-3 py-2.5 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500 outline-none font-semibold text-gray-700">
+        </div>
+        <div class="md:w-40">
+            <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Au</label>
+            <input type="date" name="date_fin" value="{{ request('date_fin') }}" class="w-full bg-gray-50 border border-gray-200 px-3 py-2.5 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500 outline-none font-semibold text-gray-700">
+        </div>
+        <div class="flex gap-2">
+            <button type="submit" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm px-6 py-2.5 rounded-xl transition shadow-md shadow-emerald-600/20 cursor-pointer border-none">
+                🔍 Filtrer
+            </button>
+            @if(request()->hasAny(['q','status','date_debut','date_fin']))
+                <a href="{{ route('admin.commandes') }}" class="bg-gray-100 hover:bg-gray-200 text-gray-600 font-bold text-sm px-4 py-2.5 rounded-xl transition flex items-center">🔄</a>
+            @endif
+        </div>
+    </form>
+
     <div class="bg-white rounded-3xl shadow-sm border border-gray-200/60 overflow-hidden">
         <div class="overflow-x-auto">
             <table class="w-full text-left border-collapse">
@@ -67,7 +102,7 @@
                             </td>
                             
                             <td class="p-5 text-center">
-                                <form action="{{ route('admin.commandes.delete', $cmd->id) }}" method="POST" onsubmit="return confirm('Voulez-vous vraiment supprimer cette commande ?');">
+                                <form action="{{ route('admin.commandes.delete', $cmd->id) }}" method="POST" data-confirm="Cette commande sera définitivement supprimée." data-confirm-title="Supprimer cette commande ?">
                                     @csrf @method('DELETE')
                                     <button type="submit" class="text-red-500 hover:text-white bg-red-50 hover:bg-red-500 p-2 rounded-xl transition duration-250">
                                         🗑️
@@ -84,4 +119,6 @@
             </table>
         </div>
     </div>
+
+    @include('partials.admin-pagination', ['paginator' => $commandes])
 @endsection

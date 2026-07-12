@@ -87,8 +87,23 @@
 
         <!-- اليمين: الجدول العصري لعرض البيانات الحاليّة -->
         <div class="lg:col-span-2 bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-            <div class="p-6 border-b border-gray-50">
+            <div class="p-6 border-b border-gray-50 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                 <h2 class="text-sm font-bold text-gray-800 tracking-tight">Liste des coupons disponibles</h2>
+
+                {{-- 🔎 Filtres --}}
+                <form method="GET" action="{{ route('admin.coupons.index') }}" class="flex gap-2">
+                    <input type="text" name="q" value="{{ request('q') }}" placeholder="Code..."
+                           class="w-28 bg-gray-50 border border-gray-200 px-3 py-2 rounded-xl text-xs focus:ring-2 focus:ring-emerald-500 outline-none font-bold uppercase text-gray-700">
+                    <select name="etat" class="bg-gray-50 border border-gray-200 px-2 py-2 rounded-xl text-xs focus:ring-2 focus:ring-emerald-500 outline-none font-semibold text-gray-700">
+                        <option value="">Tous</option>
+                        <option value="actif" @selected(request('etat') == 'actif')>Actifs</option>
+                        <option value="expire" @selected(request('etat') == 'expire')>Expirés</option>
+                    </select>
+                    <button type="submit" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs px-3 py-2 rounded-xl transition cursor-pointer border-none">🔍</button>
+                    @if(request()->hasAny(['q','etat']))
+                        <a href="{{ route('admin.coupons.index') }}" class="bg-gray-100 hover:bg-gray-200 text-gray-600 font-bold text-xs px-3 py-2 rounded-xl transition flex items-center">🔄</a>
+                    @endif
+                </form>
             </div>
 
             <div class="overflow-x-auto">
@@ -118,7 +133,7 @@
                                     {{ \Carbon\Carbon::parse($coupon->date_expiration)->format('d M Y') }}
                                 </td>
                                 <td class="p-4 text-right">
-                                    <form action="{{ route('admin.coupons.destroy', $coupon->id) }}" method="POST" onsubmit="return confirm('Supprimer ce coupon ?')" class="inline m-0">
+                                    <form action="{{ route('admin.coupons.destroy', $coupon->id) }}" method="POST" data-confirm="Ce code promo ne sera plus utilisable par les clients." data-confirm-title="Supprimer ce coupon ?" class="inline m-0">
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit" class="text-red-500 font-bold hover:text-red-700 text-[11px] cursor-pointer">Supprimer</button>
@@ -134,6 +149,10 @@
                         @endforelse
                     </tbody>
                 </table>
+            </div>
+
+            <div class="px-6 pb-6">
+                @include('partials.admin-pagination', ['paginator' => $coupons])
             </div>
         </div>
 

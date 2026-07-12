@@ -57,6 +57,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
 
     // 📦 إدارة المنتجات
     Route::get('/produits', [ProductController::class, 'list'])->name('produits');
+    Route::get('/produits/create', [ProductController::class, 'create'])->name('produits.create');
     Route::post('/produits/store', [ProductController::class, 'store'])->name('produits.store');
     Route::get('/produits/{id}/edit', [ProductController::class, 'edit'])->name('produits.edit');
     Route::put('/produits/{id}/update', [ProductController::class, 'update'])->name('produits.update');
@@ -83,6 +84,10 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::get('/messages', [AdminMessageController::class, 'index'])->name('messages.index');
     Route::put('/messages/{id}/read', [AdminMessageController::class, 'markRead'])->name('messages.markRead');
     Route::delete('/messages/{id}', [AdminMessageController::class, 'destroy'])->name('messages.delete');
+
+    // ⚡ Offres Flash & Packs (liste + page de création séparée)
+    Route::get('/offres-flash', [AdminController::class, 'flashOffers'])->name('flash.index');
+    Route::get('/offres-flash/create', [AdminController::class, 'flashCreate'])->name('flash.create');
 
     Route::get('/logs', [AdminController::class, 'viewLogs'])->name('logs');
     Route::get('/reports/export-pdf', [AdminController::class, 'exportPDFReport'])->name('reports.exportPdf');

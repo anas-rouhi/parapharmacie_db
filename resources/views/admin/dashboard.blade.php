@@ -1,240 +1,192 @@
 @extends('layouts.admin')
 
 @section('title', 'ParaAdmin | Dashboard')
-@if ($errors->any())
-    <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-2xl mb-6 font-semibold text-sm shadow-sm">
-        <p class="font-black mb-2 uppercase tracking-wide">❌ Il y a des erreurs dans le formulaire :</p>
-        <ul class="list-disc pl-5 space-y-1">
-            @foreach ($errors->all() as $error)
-                <li>{{ $error }}</li>
-            @endforeach
-        </ul>
-    </div>
-@endif
 
 @section('content')
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-    <div class="space-y-12">
-        
-        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white p-6 rounded-3xl border border-gray-200/60 shadow-sm">
-            <div class="flex items-center gap-3">
-                <h2 class="text-2xl md:text-3xl font-black text-gray-800 tracking-tight">Bienvenue, {{ Auth::user()->name }}</h2>
-                <span class="bg-red-50 text-red-700 text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-wider border border-red-200/40 shadow-sm">
-                    {{ Auth::user()->role }}
-                </span>
+    <div class="space-y-8">
+
+        {{-- 🐛 Corrigé : ce bloc était placé HORS de @section('content') → il ne s'affichait jamais. --}}
+        @if ($errors->any())
+            <div class="bg-red-50 border border-red-200 text-red-700 px-5 py-4 rounded-2xl font-semibold text-sm shadow-sm">
+                <p class="font-black mb-2 uppercase tracking-wide">❌ Il y a des erreurs dans le formulaire :</p>
+                <ul class="list-disc pl-5 space-y-1">
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
             </div>
-            <a href="{{ route('admin.reports.exportPdf') }}" class="inline-flex items-center gap-2 bg-gray-900 hover:bg-gray-800 text-white text-xs font-black px-4 py-2.5 rounded-xl shadow-md shadow-gray-200 transition duration-200">
+        @endif
+
+        {{-- ═══ EN-TÊTE ═══ --}}
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-gradient-to-r from-emerald-600 to-teal-600 p-6 md:p-8 rounded-3xl shadow-lg shadow-emerald-600/20">
+            <div>
+                <div class="flex items-center gap-3">
+                    <h2 class="text-2xl md:text-3xl font-black text-white tracking-tight">Bienvenue, {{ Auth::user()->name }}</h2>
+                    <span class="bg-white/20 backdrop-blur text-white text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-wider border border-white/20">
+                        {{ Auth::user()->role }}
+                    </span>
+                </div>
+                <p class="text-emerald-50 text-xs font-semibold mt-1.5">
+                    Voici l'activité de votre parapharmacie du
+                    {{ \Carbon\Carbon::parse($dateDebut)->format('d/m/Y') }} au {{ \Carbon\Carbon::parse($dateFin)->format('d/m/Y') }}.
+                </p>
+            </div>
+            <a href="{{ route('admin.reports.exportPdf') }}" class="inline-flex items-center gap-2 bg-white text-emerald-700 hover:bg-emerald-50 text-xs font-black px-5 py-3 rounded-xl shadow-md transition duration-200 shrink-0">
                 <span>📊</span> Télécharger le Rapport PDF
             </a>
         </div>
 
-        @if(isset($produitsAlerte) && $produitsAlerte->count() > 0)
-            <div class="bg-amber-50 border-l-4 border-amber-500 p-5 rounded-r-3xl shadow-sm">
-                <div class="flex items-start gap-3">
-                    <span class="text-xl mt-0.5">⚠️</span>
-                    <div class="flex-1">
-                        <h4 class="text-base font-black text-amber-950 uppercase tracking-wide">
-                            Attention: Produits presque épuisés !
-                        </h4>
-                        <p class="text-xs font-semibold text-amber-800 mt-0.5">
-                            Les articles suivants ont atteint le niveau critique. Pensez à réapprovisionner le stock :
-                        </p>
-                        
-                        <div class="mt-3 flex flex-wrap gap-2">
-                            @foreach($produitsAlerte as $p)
-                                <span class="inline-flex items-center bg-white border border-amber-200 text-amber-900 px-3 py-1 rounded-xl text-xs font-bold shadow-xs">
-                                    📦 {{ $p->nom }} 
-                                    <span class="ml-2 bg-amber-500 text-white px-1.5 py-0.5 rounded-lg text-[10px] font-black">
-                                        {{ $p->stock }} restants
+        {{-- ═══ ALERTE STOCK (inline, non bloquante) ═══
+             🐛 Corrigé : la vue testait $produitsAlerte (jamais transmis par le contrôleur),
+             donc cette bannière ne s'affichait jamais → d'où l'ancien popup bloquant. --}}
+        @if($produitsCritiques->count() > 0)
+            <div class="bg-amber-50 border border-amber-200 border-l-4 border-l-amber-500 p-5 rounded-2xl shadow-sm">
+                <div class="flex flex-col sm:flex-row sm:items-center gap-4">
+                    <div class="flex items-start gap-3 flex-1">
+                        <span class="text-xl mt-0.5">⚠️</span>
+                        <div class="flex-1">
+                            <h4 class="text-sm font-black text-amber-950 uppercase tracking-wide">
+                                {{ $produitsCritiques->count() }} produit{{ $produitsCritiques->count() > 1 ? 's' : '' }} presque épuisé{{ $produitsCritiques->count() > 1 ? 's' : '' }}
+                            </h4>
+                            <div class="mt-2.5 flex flex-wrap gap-2">
+                                @foreach($produitsCritiques as $p)
+                                    <span class="inline-flex items-center bg-white border border-amber-200 text-amber-900 px-3 py-1 rounded-xl text-xs font-bold">
+                                        📦 {{ $p->nom }}
+                                        <span class="ml-2 bg-amber-500 text-white px-1.5 py-0.5 rounded-lg text-[10px] font-black">
+                                            {{ $p->stock }} restants
+                                        </span>
                                     </span>
-                                </span>
-                            @endforeach
+                                @endforeach
+                            </div>
                         </div>
                     </div>
+                    <button onclick="openStockOrderModal()" class="shrink-0 bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold py-2.5 px-4 rounded-xl transition shadow-md cursor-pointer border-none">
+                        📋 Préparer le Bon de Commande
+                    </button>
                 </div>
             </div>
         @endif
 
-        <div class="bg-white p-6 rounded-3xl border border-gray-200/60 shadow-sm">
+        {{-- ═══ FILTRE DE PÉRIODE ═══ --}}
+        <div class="bg-white p-5 rounded-2xl border border-gray-200/60 shadow-sm">
             <form action="{{ route('admin.dashboard') }}" method="GET" class="flex flex-col md:flex-row items-end gap-4">
-                <div class="w-full md:w-1/3">
-                    <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Date Début :</label>
-                    <input type="date" name="date_debut" value="{{ $dateDebut }}" class="w-full bg-gray-50 border border-gray-200 px-4 py-2.5 rounded-xl text-sm focus:ring-2 focus:ring-green-500 font-semibold text-gray-700 outline-none">
+                <div class="w-full md:flex-1">
+                    <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Date Début</label>
+                    <input type="date" name="date_debut" value="{{ $dateDebut }}" class="w-full bg-gray-50 border border-gray-200 px-4 py-2.5 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500 font-semibold text-gray-700 outline-none">
                 </div>
-                <div class="w-full md:w-1/3">
-                    <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Date Fin :</label>
-                    <input type="date" name="date_fin" value="{{ $dateFin }}" class="w-full bg-gray-50 border border-gray-200 px-4 py-2.5 rounded-xl text-sm focus:ring-2 focus:ring-green-500 font-semibold text-gray-700 outline-none">
+                <div class="w-full md:flex-1">
+                    <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Date Fin</label>
+                    <input type="date" name="date_fin" value="{{ $dateFin }}" class="w-full bg-gray-50 border border-gray-200 px-4 py-2.5 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500 font-semibold text-gray-700 outline-none">
                 </div>
-                <div class="w-full md:w-1/3 flex gap-2">
-                    <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm px-6 py-3 rounded-xl transition duration-200 shadow-md cursor-pointer border-none">
+                <div class="w-full md:w-auto flex gap-2">
+                    <button type="submit" class="flex-1 md:flex-none bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm px-6 py-2.5 rounded-xl transition duration-200 shadow-md shadow-emerald-600/20 cursor-pointer border-none">
                         🔍 Filtrer
                     </button>
-                    <a href="{{ route('admin.dashboard') }}" class="bg-gray-100 hover:bg-gray-200 text-gray-600 font-bold text-sm px-4 py-3 rounded-xl transition duration-200 text-center flex items-center justify-center decoration-none">
-                        🔄 Reset
+                    <a href="{{ route('admin.dashboard') }}" class="bg-gray-100 hover:bg-gray-200 text-gray-600 font-bold text-sm px-4 py-2.5 rounded-xl transition duration-200 text-center flex items-center justify-center">
+                        🔄
                     </a>
                 </div>
             </form>
         </div>
 
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            <div class="bg-white p-6 rounded-3xl border border-gray-200/60 shadow-sm flex items-center justify-between transition hover:shadow-md">
-                <div>
-                    <span class="text-xs font-bold text-gray-400 uppercase tracking-wider block">Total Produits</span>
-                    <span class="text-3xl font-black text-gray-800 block mt-2">{{ $totalProduits }}</span>
-                </div>
-                <div class="h-12 w-12 bg-green-50 rounded-2xl flex items-center justify-center text-green-600 text-xl font-bold shadow-sm">📦</div>
-            </div>
+        {{-- ═══ KPI (une seule grille homogène) ═══ --}}
+        <div class="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
+            @php
+                $kpis = [
+                    ['label' => 'Produits',        'value' => $totalProduits,                            'icon' => '📦', 'color' => 'emerald'],
+                    ['label' => 'Catégories',      'value' => $totalCategories,                          'icon' => '🏷️', 'color' => 'sky'],
+                    ['label' => 'Stock critique',  'value' => $stockLimite,                              'icon' => '⚠️', 'color' => $stockLimite > 0 ? 'orange' : 'gray'],
+                    ['label' => 'Commandes',       'value' => $totalCommandes,                           'icon' => '🛒', 'color' => 'indigo'],
+                    ['label' => "Chiffre d'aff.",  'value' => number_format($totalRevenu, 2) . ' DH',    'icon' => '💰', 'color' => 'violet'],
+                    ['label' => 'Bénéfice (est.)', 'value' => number_format($totalBenefice, 2) . ' DH',  'icon' => '📈', 'color' => 'teal'],
+                ];
+                $palette = [
+                    'emerald' => ['bg-emerald-50', 'text-emerald-600'],
+                    'sky'     => ['bg-sky-50', 'text-sky-600'],
+                    'orange'  => ['bg-orange-50', 'text-orange-600'],
+                    'gray'    => ['bg-gray-100', 'text-gray-400'],
+                    'indigo'  => ['bg-indigo-50', 'text-indigo-600'],
+                    'violet'  => ['bg-violet-50', 'text-violet-600'],
+                    'teal'    => ['bg-teal-50', 'text-teal-600'],
+                ];
+            @endphp
 
-            <div class="bg-white p-6 rounded-3xl border border-gray-200/60 shadow-sm flex items-center justify-between transition hover:shadow-md">
-                <div>
-                    <span class="text-xs font-bold text-gray-400 uppercase tracking-wider block">Total Categories</span>
-                    <span class="text-3xl font-black text-blue-600 block mt-2">{{ $totalCategories }}</span>
+            @foreach($kpis as $kpi)
+                @php [$kpiBg, $kpiText] = $palette[$kpi['color']]; @endphp
+                <div class="bg-white p-5 rounded-2xl border border-gray-200/60 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition duration-200">
+                    <div class="flex items-center justify-between mb-3">
+                        <span class="h-9 w-9 {{ $kpiBg }} {{ $kpiText }} rounded-xl flex items-center justify-center text-base">{{ $kpi['icon'] }}</span>
+                    </div>
+                    <p class="text-[10px] font-bold text-gray-400 uppercase tracking-wider">{{ $kpi['label'] }}</p>
+                    <p class="text-xl xl:text-2xl font-black text-gray-900 mt-1 truncate">{{ $kpi['value'] }}</p>
                 </div>
-                <div class="h-12 w-12 bg-blue-50 rounded-2xl flex items-center justify-center text-blue-600 text-xl font-bold shadow-sm">🏷️</div>
-            </div>
+            @endforeach
+        </div>
 
-            <div class="bg-white p-6 rounded-3xl border border-gray-200/60 shadow-sm flex flex-col justify-between transition hover:shadow-md {{ $stockLimite > 0 ? 'border-l-4 border-l-orange-500' : '' }}">
-                <div class="flex items-center justify-between w-full">
+        {{-- ═══ RACCOURCIS (la gestion complète est sur les pages dédiées) ═══ --}}
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            <a href="{{ route('admin.produits.create') }}"
+               class="flex items-center justify-between gap-4 bg-white p-5 rounded-2xl border border-gray-200/60 shadow-sm hover:shadow-md hover:border-emerald-200 transition duration-200 group">
+                <div class="flex items-center gap-4">
+                    <span class="h-11 w-11 bg-emerald-50 text-emerald-600 rounded-xl flex items-center justify-center text-lg shrink-0">➕</span>
                     <div>
-                        <span class="text-xs font-bold text-gray-400 uppercase tracking-wider block">Stock Critique (&lt;=3)</span>
-                        <span class="text-3xl font-black {{ $stockLimite > 0 ? 'text-orange-500 animate-pulse' : 'text-gray-800' }} block mt-2">{{ $stockLimite }}</span>
+                        <p class="text-sm font-black text-gray-800">Ajouter un produit</p>
+                        <p class="text-xs text-gray-400 font-semibold mt-0.5">Enrichir le catalogue de la boutique</p>
                     </div>
-                    <div class="h-12 w-12 {{ $stockLimite > 0 ? 'bg-orange-50 text-orange-500' : 'bg-gray-100 text-gray-400' }} rounded-2xl flex items-center justify-center text-xl font-bold shadow-sm">⚠️</div>
                 </div>
-                @if($stockLimite > 0)
-                    <div class="mt-4 pt-2 border-t border-gray-100 w-full">
-                        <button onclick="openStockOrderModal()" class="w-full text-center bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold py-2.5 px-3 rounded-xl transition shadow-md flex items-center justify-center gap-1.5 cursor-pointer border-none">
-                            📊 Préparer Bon de Commande
-                        </button>
+                <span class="text-xs font-black text-gray-500 group-hover:text-emerald-600 transition flex items-center gap-1.5 shrink-0">
+                    Créer
+                    <svg class="w-4 h-4 group-hover:translate-x-1 transition" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+                </span>
+            </a>
+
+            <a href="{{ route('admin.flash.index') }}"
+               class="flex items-center justify-between gap-4 bg-white p-5 rounded-2xl border border-gray-200/60 shadow-sm hover:shadow-md hover:border-amber-200 transition duration-200 group">
+                <div class="flex items-center gap-4">
+                    <span class="h-11 w-11 bg-amber-50 text-amber-600 rounded-xl flex items-center justify-center text-lg shrink-0">⚡</span>
+                    <div>
+                        <p class="text-sm font-black text-gray-800">Offres Flash & Packs</p>
+                        <p class="text-xs text-gray-400 font-semibold mt-0.5">
+                            @if($offresActivesCount > 0)
+                                <span class="text-emerald-600 font-bold">{{ $offresActivesCount }} offre{{ $offresActivesCount > 1 ? 's' : '' }} active{{ $offresActivesCount > 1 ? 's' : '' }}</span> sur la boutique
+                            @else
+                                Aucune offre active pour le moment
+                            @endif
+                        </p>
                     </div>
-                @endif
-            </div>
+                </div>
+                <span class="text-xs font-black text-gray-500 group-hover:text-amber-600 transition flex items-center gap-1.5 shrink-0">
+                    Gérer
+                    <svg class="w-4 h-4 group-hover:translate-x-1 transition" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+                </span>
+            </a>
         </div>
 
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            <div class="bg-white p-6 rounded-3xl shadow-sm border border-gray-200/60 border-l-4 border-l-blue-500 flex justify-between items-center">
-                <div>
-                    <p class="text-gray-400 text-xs uppercase font-bold tracking-wider">Commandes (Période)</p>
-                    <p class="text-3xl font-black text-gray-800 mt-2">{{ $totalCommandes }}</p>
-                </div>
-                <span class="text-2xl p-2 bg-gray-50 rounded-xl">🛒</span>
-            </div>
-            
-            <div class="bg-white p-6 rounded-3xl shadow-sm border border-gray-200/60 border-l-4 border-l-purple-500 flex justify-between items-center">
-                <div>
-                    <p class="text-gray-400 text-xs uppercase font-bold tracking-wider">Chiffre d'Affaires</p>
-                    <p class="text-3xl font-black text-purple-700 mt-2">{{ number_format($totalRevenu, 2) }} DH</p>
-                </div>
-                <span class="text-2xl p-2 bg-gray-50 rounded-xl">💰</span>
-            </div>
-
-            <div class="bg-white p-6 rounded-3xl shadow-sm border border-gray-200/60 border-l-4 border-l-green-500 flex justify-between items-center">
-                <div>
-                    <p class="text-gray-400 text-xs uppercase font-bold tracking-wider">Bénéfice Net (Est.)</p>
-                    <p class="text-3xl font-black text-green-600 mt-2">{{ number_format($totalBenefice, 2) }} DH</p>
-                </div>
-                <span class="text-2xl p-2 bg-gray-50 rounded-xl">📈</span>
-            </div>
-        </div>
-
+        {{-- ═══ GRAPHIQUE ═══ --}}
         <div class="bg-white p-6 md:p-8 rounded-3xl shadow-sm border border-gray-200/60">
             <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 mb-6">
                 <div>
-                    <h3 class="text-xl font-black text-gray-800 flex items-center gap-2">
+                    <h3 class="text-lg font-black text-gray-800 flex items-center gap-2">
                         <span>📊</span> Analyse des Ventes & Bénéfices
                     </h3>
-                    <p class="text-xs text-gray-400 font-medium mt-1">Rapports visuels de l'évolution financière de la parapharmacie</p>
+                    <p class="text-xs text-gray-400 font-medium mt-1">Évolution sur les 6 derniers mois (commandes validées &amp; livrées)</p>
                 </div>
                 <div class="flex gap-4 text-xs font-bold mt-2 sm:mt-0">
-                    <span class="flex items-center gap-1.5 text-purple-600">
-                        <span class="h-3 w-3 rounded-full bg-purple-500 block"></span> Chiffre d'Affaires
+                    <span class="flex items-center gap-1.5 text-violet-600">
+                        <span class="h-3 w-3 rounded-full bg-violet-500 block"></span> Chiffre d'Affaires
                     </span>
-                    <span class="flex items-center gap-1.5 text-green-600">
-                        <span class="h-3 w-3 rounded-full bg-green-500 block"></span> Bénéfice Net
+                    <span class="flex items-center gap-1.5 text-emerald-600">
+                        <span class="h-3 w-3 rounded-full bg-emerald-500 block"></span> Bénéfice Net
                     </span>
                 </div>
             </div>
-            <div>
-                <canvas id="analyticsChart" height="120"></canvas>
+            <div class="h-72">
+                <canvas id="analyticsChart"></canvas>
             </div>
         </div>
 
-        <div class="bg-white p-8 rounded-3xl shadow-sm border border-gray-200/60">
-            <h3 class="text-xl font-black text-gray-800 mb-6 flex items-center">
-                <span class="bg-green-100 text-green-600 p-2 rounded-xl mr-3">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-                    </svg>
-                </span>
-                Ajouter un nouveau produit
-            </h3>
-
-            <form action="{{ route('admin.produits.store') }}" method="POST" enctype="multipart/form-data" class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                @csrf
-                <div>
-                    <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Nom du produit</label>
-                    <input type="text" name="nom" required placeholder="Nom du produit" class="w-full p-3.5 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 outline-none text-gray-900 font-medium transition shadow-sm">
-                </div>
-                
-                <div class="grid grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Prix d'achat (DH)</label>
-                        <input type="number" step="0.01" name="prix_achat" required placeholder="Prix d'achat" class="w-full p-3.5 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 outline-none text-gray-900 font-bold transition shadow-sm">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Prix de vente (DH)</label>
-                        <input type="number" step="0.01" name="prix" required placeholder="Prix de vente" class="w-full p-3.5 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 outline-none text-gray-900 font-bold transition shadow-sm">
-                    </div>
-                </div>
-
-                <div>
-                    <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Catégorie :</label>
-                    <div class="flex gap-2">
-                        <select id="category_select" name="category_id" class="bg-gray-50 border border-gray-200 rounded-xl w-full py-3.5 px-3 text-gray-700 font-semibold focus:outline-none focus:ring-2 focus:ring-green-500 shadow-sm" required>
-                            <option value="">Sélectionner une catégorie</option>
-                            @foreach($categories as $cat)
-                                <option value="{{ $cat->id }}">{{ $cat->nom }}</option>
-                            @endforeach
-                        </select>
-                        <button type="button" onclick="openCategoryModal()" class="bg-green-600 hover:bg-green-700 text-white font-bold px-4 rounded-xl shadow-md transition border-none cursor-pointer text-lg">+</button>
-                    </div>
-                </div>
-
-                <div>
-                    <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Stock disponible</label>
-                    <input type="number" name="stock" required placeholder="Stock" class="w-full p-3.5 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 outline-none text-gray-900 font-bold transition shadow-sm">
-                </div>
-
-                <div class="md:col-span-2">
-                    <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Description</label>
-                    <textarea name="description" rows="3" placeholder="Détails du produit..." class="w-full p-3.5 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-green-500 outline-none text-gray-900 font-medium transition shadow-sm"></textarea>
-                </div>
-
-                <div class="md:col-span-2">
-                    <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Image du produit</label>
-                    <div class="border-2 border-dashed border-gray-200 rounded-2xl p-4 text-center hover:border-green-400 transition bg-gray-50/50">
-                        <input type="file" name="image" class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-green-50 file:text-green-700 hover:file:bg-green-100 cursor-pointer">
-                    </div>
-                </div>
-                
-                <div class="md:col-span-2 mt-4 text-right">
-                    <button type="submit" class="bg-green-600 text-white px-12 py-4 rounded-2xl font-black shadow-lg shadow-green-100 hover:bg-green-700 hover:scale-[1.01] transition-all duration-300 uppercase tracking-wider text-sm border-none w-full md:w-auto cursor-pointer">Enregistrer le produit</button>
-                </div>
-            </form>
-        </div>
-
-       <div id="categoryModal" class="fixed inset-0 bg-gray-900/60 hidden flex items-center justify-center z-50 backdrop-blur-sm">
-            <div class="bg-white p-6 rounded-3xl shadow-xl max-w-sm w-full mx-4 border border-gray-200 animate-in fade-in zoom-in-95 duration-150">
-                <h3 class="text-lg font-black text-gray-900 mb-4">Ajouter une nouvelle catégorie</h3>
-                <input type="text" id="new_category_name" class="border border-gray-200 rounded-xl w-full py-3 px-4 bg-gray-50 text-gray-700 mb-4 focus:outline-none focus:ring-2 focus:ring-green-500 font-semibold" placeholder="Nom de la catégorie">
-                <p id="modal_error" class="text-red-500 text-xs hidden mb-2 font-bold">⚠️ </p>
-                <div class="flex justify-end gap-2">
-                    <button type="button" onclick="closeCategoryModal()" class="bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold py-2.5 px-4 rounded-xl transition border-none text-sm cursor-pointer">Annuler</button>
-                    <button type="button" onclick="submitCategoryAjax()" class="bg-green-600 hover:bg-green-700 text-white font-bold py-2.5 px-4 rounded-xl transition border-none text-sm cursor-pointer">Ajouter</button>
-                </div>
-            </div>
-        </div>
 
         <div id="stockOrderModal" class="fixed inset-0 bg-gray-900/60 hidden flex items-center justify-center z-50 backdrop-blur-sm">
             <div class="bg-white p-6 rounded-3xl shadow-xl max-w-2xl w-full mx-4 border border-gray-200 max-h-[85vh] flex flex-col">
@@ -257,108 +209,10 @@
         
     </div>
 
-   <form id="flashSaleForm" action="{{ route('admin.products.flash.save') }}" method="POST" class="mt-6 p-6 bg-slate-50 rounded-2xl border border-slate-200 shadow-sm max-w-4xl mx-auto">
-    @csrf
 
-    <h3 class="text-sm font-black text-slate-800 uppercase tracking-wider mb-4 flex items-center gap-2">
-        <i class="fa-solid fa-bolt text-amber-500 animate-pulse"></i> Configuration Spécifique du Produit / Pack Flash
-    </h3>
-    
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-        <div class="md:col-span-2">
-            <label class="block text-xs font-bold text-slate-600 uppercase mb-2">Choisir le Produit / Pack Principal</label>
-            <select id="product_select" name="product_id" required onchange="updateFormAction(this.value)" class="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500">
-                <option value="" selected disabled>-- Sélectionner un produit --</option>
-                @foreach($produits as $p)
-                    <option value="{{ $p->id }}" 
-                            data-flash="{{ $p->is_flash_sale ?? 0 }}" 
-                            data-prix="{{ $p->prix_flash ?? '' }}" 
-                            data-end="{{ $p->flash_sale_end ?? '' }}"
-                            data-quantite-vendue="{{ $p->quantite_flash_vendue ?? 0 }}">
-                        {{ $p->nom }} ({{ $p->prix }} DH)
-                    </option>
-                @endforeach
-            </select>
-        </div>
-
-        <div>
-            <label class="block text-xs font-bold text-slate-600 uppercase mb-2">ID du Produit Sélectionné</label>
-            <input type="text" id="display_product_id" readonly placeholder="Aucun" class="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm bg-gray-100 font-mono font-bold text-center text-gray-700 outline-none">
-        </div>
-    </div>
-
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-        <div>
-            <label class="block text-xs font-bold text-slate-600 uppercase mb-2">Prix Spécial du Pack (DH)</label>
-            <input type="number" step="0.01" id="prix_flash" name="prix_flash" required placeholder="Prix" class="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 font-bold">
-        </div>
-
-        <div>
-            <label class="block text-xs font-bold text-slate-600 uppercase mb-2">Quantité Flash / Vendue</label>
-            <input type="number" id="quantite_flash_input" name="quantite_flash_vendue" placeholder="Quantité" class="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 font-bold">
-        </div>
-
-        <div>
-            <label class="block text-xs font-bold text-slate-600 uppercase mb-2">Statut de l'Offre</label>
-            <select id="is_flash_sale" name="is_flash_sale" class="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500 font-semibold">
-                <option value="0">Désactiver (Normal)</option>
-                <option value="1" selected>Activer (Flash Sale / Pack)</option>
-            </select>
-        </div>
-    </div>
-
-    <div class="grid grid-cols-1 gap-4">
-        <div>
-            <label class="block text-xs font-bold text-slate-600 uppercase mb-2">Date de Fin de l'Offre</label>
-            <input type="datetime-local" id="flash_sale_end" name="flash_sale_end" required class="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
-        </div>
-    </div>
-
-    <div class="mt-5">
-        <label class="block text-xs font-bold text-slate-600 uppercase mb-2">Sélectionner les produits inclus dans ce Pack :</label>
-        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 max-h-40 overflow-y-auto p-3 bg-white rounded-xl border border-slate-200">
-            @foreach($produits as $p)
-                <label class="flex items-center gap-2 text-xs font-medium text-slate-700 cursor-pointer p-1.5 rounded-lg hover:bg-slate-50 select-none">
-                    <input type="checkbox" name="pack_items[]" value="{{ $p->nom }}" class="rounded text-indigo-600 focus:ring-indigo-500 h-4 w-4 border-gray-300">
-                    <span class="truncate">{{ $p->nom }}</span>
-                </label>
-            @endforeach
-        </div>
-    </div>
-
-    <div class="mt-5 flex justify-end border-t border-slate-200 pt-4">
-        <button type="submit" class="inline-flex items-center gap-2 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white text-xs font-black px-5 py-3 rounded-xl uppercase tracking-wider shadow-md transition transform active:scale-95 cursor-pointer duration-150">
-            <i class="fa-solid fa-circle-check text-sm"></i>
-            Confirmer la configuration
-        </button>
-    </div>
-</form>
-
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    {{-- SweetAlert2 est déjà chargé par le layout (partials.confirm-dialog) — plus de double chargement. --}}
 
     <script>
-        function updateFormAction(productId) {
-            // 1. كنعرضو الـ ID ف الحقل المخصص ليه باش يبان للـ Admin
-            document.getElementById('display_product_id').value = productId ? productId : 'Aucun';
-
-            const select = document.getElementById('product_select');
-            const option = select.options[select.selectedIndex];
-            
-            if (option && productId) {
-                if(document.getElementById('prix_flash')) {
-                    document.getElementById('prix_flash').value = option.getAttribute('data-prix') || '';
-                }
-                if(document.getElementById('flash_sale_end')) {
-                    document.getElementById('flash_sale_end').value = option.getAttribute('data-end') || '';
-                }
-                if(document.getElementById('quantite_flash_input')) {
-                    document.getElementById('quantite_flash_input').value = option.getAttribute('data-quantite-vendue') || '0';
-                }
-                if(document.getElementById('is_flash_sale')) {
-                    document.getElementById('is_flash_sale').value = option.getAttribute('data-flash') || '0';
-                }
-            }
-        }
 
         // 🌟 وظائف الـ Modal الجديدة والمطورة للـ Bon de Commande
         const produitsCritiquesGlobal = {!! json_encode($produitsCritiques ?? []) !!};
@@ -475,28 +329,13 @@
         }
 
         document.addEventListener("DOMContentLoaded", function() {
-            // Alert Stock Critique Initial via SweetAlert2
-            const produitsCritiques = {!! json_encode($produitsCritiques ?? []) !!};
-            if (produitsCritiques.length > 0) {
-                let listeProduits = '<ul style="text-align: left; max-height: 200px; overflow-y: auto; padding-left: 20px;">';
-                produitsCritiques.forEach(prod => {
-                    listeProduits += `<li style="margin-bottom: 8px; color: #dc2626;">❌ <b>${prod.nom}</b> (Reste: ${prod.stock} pcs)</li>`;
-                });
-                listeProduits += '</ul>';
-
-                Swal.fire({
-                    title: '⚠️ Alertes Stock Critique !',
-                    html: `<p style="margin-bottom: 15px;">Les produits suivants sont presque en rupture de stock :</p>${listeProduits}`,
-                    icon: 'warning',
-                    confirmButtonColor: '#22c55e',
-                    confirmButtonText: 'D’accord',
-                    backdrop: `rgba(220, 38, 38, 0.1)`
-                });
-            }
+            // ℹ️ L'ancien popup bloquant "Alertes Stock Critique" a été supprimé :
+            // il fallait cliquer "D'accord" à CHAQUE chargement. L'alerte est désormais
+            // affichée en bannière (non bloquante) directement dans la page.
 
             // Chart.js Configuration
             const ctx = document.getElementById('analyticsChart').getContext('2d');
-            const myChart = new Chart(ctx, {
+            new Chart(ctx, {
                 type: 'bar',
                 data: {
                     labels: {!! json_encode($chartLabels) !!},
@@ -504,106 +343,50 @@
                         {
                             label: "Chiffre d'Affaires",
                             data: {!! json_encode($chartSales) !!},
-                            backgroundColor: '#3b82f6',
+                            backgroundColor: '#8b5cf6',
                             borderRadius: 6,
-                            barPercentage: 0.5,
-                            categoryPercentage: 0.6
+                            barPercentage: 0.6,
+                            categoryPercentage: 0.65
                         },
                         {
                             label: 'Bénéfice Net',
                             data: {!! json_encode($chartProfits) !!},
-                            backgroundColor: '#22c55e',
+                            backgroundColor: '#10b981',
                             borderRadius: 6,
-                            barPercentage: 0.5,
-                            categoryPercentage: 0.6
+                            barPercentage: 0.6,
+                            categoryPercentage: 0.65
                         }
                     ]
                 },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
-                    plugins: { legend: { display: false } }
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: (c) => `${c.dataset.label} : ${Number(c.raw).toLocaleString('fr-FR', {minimumFractionDigits: 2})} DH`
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: { color: '#f1f5f9' },
+                            ticks: {
+                                callback: (v) => v.toLocaleString('fr-FR') + ' DH',
+                                font: { size: 11 },
+                                color: '#94a3b8'
+                            }
+                        },
+                        x: {
+                            grid: { display: false },
+                            ticks: { font: { size: 11, weight: 'bold' }, color: '#64748b' }
+                        }
+                    }
                 }
             });
         });
 
-
-     // ==========================================
-// 🌟 Modals Categories Functions (🔴 FINAL & CLEAN)
-// ==========================================
-function openCategoryModal() { 
-    document.getElementById('categoryModal').classList.remove('hidden'); 
-    document.getElementById('modal_error').classList.add('hidden');
-}
-
-function closeCategoryModal() { 
-    document.getElementById('categoryModal').classList.add('hidden'); 
-    document.getElementById('new_category_name').value = ''; 
-    document.getElementById('modal_error').classList.add('hidden');
-}
-
-function submitCategoryAjax() {
-    const name = document.getElementById('new_category_name').value.trim();
-    const errorElement = document.getElementById('modal_error');
-    
-    // 1. الـ Validation ف الـ Frontend قبل ما يصيفط
-    if(!name) {
-        errorElement.textContent = "⚠️ Le nom de la catégorie est requis.";
-        errorElement.classList.remove('hidden');
-        return;
-    }
-
-    // 2. إرسال الـ الطلب بالـ Route الصحيح ديال الـ Controller
-    fetch("{{ route('admin.categories.ajaxStore') }}", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-            "Accept": "application/json",
-            "X-CSRF-TOKEN": "{{ csrf_token() }}"
-        },
-        body: JSON.stringify({ nom: name })
-    })
-    .then(response => {
-        if (!response.ok) {
-            throw response;
-        }
-        return response.json();
-    })
-    .then(data => {
-        if(data.success || data.id) {
-            // 3. جلب الـ Select وزيادة الـ Option الجديدة ديناميكياً
-            let select = document.getElementById('category_select');
-            let option = document.createElement('option');
-            option.value = data.id;
-            option.text = data.nom;
-            option.selected = true; // كترجع هي المعزولة ديريكت
-            select.add(option);
-            
-            // 4. شد الـ Modal ونقي الـ Input
-            closeCategoryModal();
-
-            // 5. زواقة بـ SweetAlert2 مادام ملقم ف الباج
-            Swal.fire({
-                title: 'Succès !',
-                text: 'La catégorie a été ajoutée avec succès.',
-                icon: 'success',
-                confirmButtonColor: '#22c55e'
-            });
-        } else {
-            errorElement.textContent = "⚠️ " + (data.message || "Erreur lors de l'ajout.");
-            errorElement.classList.remove('hidden');
-        }
-    })
-    .catch(async (err) => {
-        console.error("Erreur:", err);
-        try {
-            const errorData = await err.json();
-            errorElement.textContent = "⚠️ " + (errorData.message || "Cette catégorie existe déjà.");
-        } catch(e) {
-            errorElement.textContent = "⚠️ Une erreur est survenue. Vérifiez le nom.";
-        }
-        errorElement.classList.remove('hidden');
-    });
-}
     </script>
 @endsection

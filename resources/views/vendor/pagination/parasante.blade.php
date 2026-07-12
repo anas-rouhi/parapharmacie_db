@@ -6,14 +6,14 @@
             @if ($paginator->onFirstPage())
                 <li aria-disabled="true">
                     <span class="flex items-center justify-center h-10 w-10 rounded-xl text-gray-300 bg-gray-50 cursor-not-allowed">
-                        <i class="fa-solid fa-angle-left text-xs"></i>
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
                     </span>
                 </li>
             @else
                 <li>
                     <a href="{{ $paginator->previousPageUrl() }}" rel="prev"
                        class="flex items-center justify-center h-10 w-10 rounded-xl text-gray-600 bg-gray-50 hover:bg-green-600 hover:text-white transition duration-200 active:scale-95">
-                        <i class="fa-solid fa-angle-left text-xs"></i>
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
                     </a>
                 </li>
             @endif
@@ -47,13 +47,13 @@
                 <li>
                     <a href="{{ $paginator->nextPageUrl() }}" rel="next"
                        class="flex items-center justify-center h-10 w-10 rounded-xl text-gray-600 bg-gray-50 hover:bg-green-600 hover:text-white transition duration-200 active:scale-95">
-                        <i class="fa-solid fa-angle-right text-xs"></i>
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
                     </a>
                 </li>
             @else
                 <li aria-disabled="true">
                     <span class="flex items-center justify-center h-10 w-10 rounded-xl text-gray-300 bg-gray-50 cursor-not-allowed">
-                        <i class="fa-solid fa-angle-right text-xs"></i>
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
                     </span>
                 </li>
             @endif
